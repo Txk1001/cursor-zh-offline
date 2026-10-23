@@ -1,0 +1,33 @@
+{
+  "$comment": "Terminology contract for zh-cn. Translate UI labels, including feature names. Keep Cursor and protocol names such as MCP.",
+  "locale": "zh-cn",
+  "terms": [
+    { "en": "Cursor", "zh": "Cursor", "keepEnglish": true, "note": "产品名，不译" },
+    { "en": "Agent", "zh": "智能体", "keepEnglish": false, "note": "界面标题和句子都译；复数 Agents 同样用「智能体」" },
+    { "en": "Composer", "zh": "编写", "keepEnglish": false },
+    { "en": "Tab", "zh": "代码补全", "keepEnglish": false, "note": "Cursor 的补全功能。编辑器标签页仍用「标签页」" },
+    { "en": "Plan", "zh": "计划", "keepEnglish": false },
+    { "en": "Ask", "zh": "提问", "keepEnglish": false },
+    { "en": "Steer", "zh": "引导", "keepEnglish": false },
+    { "en": "Cloud Agent", "zh": "云端智能体", "keepEnglish": false },
+    { "en": "Bugbot", "zh": "缺陷检查", "keepEnglish": false },
+    { "en": "Instant Grep", "zh": "Instant Grep", "keepEnglish": true, "note": "产品功能名，不译" },
+    { "en": "Agent Store", "zh": "智能体商店", "keepEnglish": false },
+    { "en": "Rules", "zh": "规则", "keepEnglish": false },
+    { "en": "Memories", "zh": "记忆", "keepEnglish": false },
+    { "en": "MCP", "zh": "MCP", "keepEnglish": true },
+    { "en": "Skills", "zh": "技能", "keepEnglish": false },
+    { "en": "Hooks", "zh": "钩子", "keepEnglish": false },
+    { "en": "Checkpoints", "zh": "检查点", "keepEnglish": false },
+    { "en": "Auto-review", "zh": "自动审查", "keepEnglish": false },
+    { "en": "Workspace", "zh": "工作区", "keepEnglish": false, "note": "沿用 VS Code 官方中文译法" },
+    { "en": "Command Palette", "zh": "命令面板", "keepEnglish": false, "note": "沿用 VS Code 官方中文译法" }
+  ],
+  "style": {
+    "punctuation": "中文全角标点；括号用（），但保留占位符与命令链接中的半角原样",
+    "placeholders": "{0}、{1} 等占位符必须原样保留",
+    "codicons": "$(icon-name) 图标标记必须原样保留",
+    "commandLinks": "Markdown 命令链接 [文本](command:xxx) 中的 command: 部分不得翻译",
+    "productNames": "界面标题要翻译。Cursor 产品名、MCP 协议名保持原文。Instant Grep 仍保留英文"
+  }
+}

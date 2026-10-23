@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "source": "Example conversation title",
+      "translation": "示例会话标题"
+    },
+    {
+      "source": "This is an example message.",
+      "translation": "这是一条示例消息。"
+    }
+  ]
+}

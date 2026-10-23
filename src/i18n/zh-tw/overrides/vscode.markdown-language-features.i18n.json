@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "contents": {
+    "package": {
+      "configuration.markdown.copyFiles.destination": "設定複製/貼上或拖放所建立檔案的路徑和檔案名稱。這是 Glob 地圖，與 Markdown 應在其中建立新檔案之目的地路徑的文件路徑相符。\n\n目的地路徑可能會使用下列變數:\n\n- '${documentDirName}' - Markdown 文件的絕對父目錄路徑，例如 '/Users/me/myProject/docs'。\n- '${documentRelativeDirName}' - Markdown 文件的相對父目錄路徑，例如 'docs'。如果檔案不是工作區的一部分，這和 '${documentDirName}' 相同。\n- '${documentFileName}' - Markdown 文件的完整檔案名稱，例如 'README.md'。\n- '${documentBaseName}' - Markdown 文件的基底名稱，例如 'README'。\n- '${documentExtName}' - Markdown 文件的副檔名，例如 'md'。\n- '${documentFilePath}' - Markdown 文件的絕對路徑，例如 '/Users/me/myProject/docs/README.md'。\n- '${documentRelativeFilePath}' - Markdown 文件的相對路徑，例如 'docs/README.md'。如果檔案不是工作區的一部分，這和 '${documentFilePath}' 相同。\n- '${documentWorkspaceFolder}' - Markdown 文件的工作區資料夾，例如 '/Users/me/myProject'。如果檔案不是工作區的一部分，這和 '${documentDirName}' 相同。\n- '${fileName}' - 已置放檔案的檔案名稱，例如 'image.png'。\n- '${fileExtName}' - 已置放檔案的副檔名，例如 'png'。\n- '${unixTime}' - 目前的 Unix 時間戳記 (以毫秒為單位)。"
+    }
+  }
+}

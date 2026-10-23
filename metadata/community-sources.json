@@ -1,0 +1,90 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "repo": "ggbdpq/cursor-loc",
+      "file": "packages/patch-core/src/assets/cursor.inject.js",
+      "sha": "8b4aefdd65c3f34c25b70bff0d77c06b47acc0ad",
+      "local": "ggbdpq-cursor.inject.js",
+      "bytes": 13104,
+      "url": "https://github.com/ggbdpq/cursor-loc/blob/main/packages/patch-core/src/assets/cursor.inject.js"
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "repo": "ggbdpq/cursor-loc",
+      "file": "i18n/cursor-language-pack-zh-hans/translations/settings/agents.i18n.json",
+      "sha": "9f89278c64de85b77d05ed21ba6eaa534345c7da",
+      "local": "ggbdpq-agents.i18n.json",
+      "bytes": 28933,
+      "url": "https://github.com/ggbdpq/cursor-loc/blob/main/i18n/cursor-language-pack-zh-hans/translations/settings/agents.i18n.json"
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "repo": "ggbdpq/cursor-loc",
+      "file": "i18n/cursor-language-pack-zh-hans/translations/settings/dropdown-options.i18n.json",
+      "sha": "c43a79f22b23daa8c5f85960ca5ea2755f795780",
+      "local": "ggbdpq-dropdown-options.i18n.json",
+      "bytes": 10209,
+      "url": "https://github.com/ggbdpq/cursor-loc/blob/main/i18n/cursor-language-pack-zh-hans/translations/settings/dropdown-options.i18n.json"
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "repo": "ggbdpq/cursor-loc",
+      "file": "i18n/cursor-language-pack-zh-hans/translations/settings/general.i18n.json",
+      "sha": "d3589f68898c7ee3505491651fb0d0b07450cc99",
+      "local": "ggbdpq-general.i18n.json",
+      "bytes": 11598,
+      "url": "https://github.com/ggbdpq/cursor-loc/blob/main/i18n/cursor-language-pack-zh-hans/translations/settings/general.i18n.json"
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "repo": "ggbdpq/cursor-loc",
+      "file": "i18n/cursor-language-pack-zh-hans/translations/common.i18n.json",
+      "sha": "6664607b8987183138b0071c1ed003ff955f6e4f",
+      "local": "ggbdpq-common.i18n.json",
+      "bytes": 5374,
+      "url": "https://github.com/ggbdpq/cursor-loc/blob/main/i18n/cursor-language-pack-zh-hans/translations/common.i18n.json"
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "repo": "LoosePrince/cursor-zh-cn-pack",
+      "file": "src/runtimeStateCleaner.ts",
+      "sha": "e9f90ac1325572904074e7166ec3127c2a6b5ce5",
+      "local": "LoosePrince-runtimeStateCleaner.ts",
+      "bytes": 14476,
+      "url": "https://github.com/LoosePrince/cursor-zh-cn-pack/blob/master/src/runtimeStateCleaner.ts"
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "repo": "ggbdpq/cursor-loc",
+      "file": "LICENSE",
+      "sha": "62e7c1b060f180a74d5f7cbb4221c6bc533dadd8",
+      "local": "ggbdpq-LICENSE",
+      "bytes": 1085,
+      "url": "https://github.com/ggbdpq/cursor-loc/blob/main/LICENSE"
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "repo": "LoosePrince/cursor-zh-cn-pack",
+      "file": "LICENSE",
+      "sha": "83765c81d3e470eb98de2ef76bffdf5830265fe2",
+      "local": "LoosePrince-LICENSE",
+      "bytes": 1067,
+      "url": "https://github.com/LoosePrince/cursor-zh-cn-pack/blob/master/LICENSE"
+    }
+  }
+]

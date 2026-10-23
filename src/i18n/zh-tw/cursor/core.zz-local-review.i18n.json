@@ -1,0 +1,15 @@
+{
+  "version": "1.0.0",
+  "contents": {
+    "vs/workbench/contrib/debug/browser/linkDetector": {
+      "fileLinkWithPath": "按住 Ctrl 並按一下以{0}\n{1}",
+      "fileLinkWithPathMac": "按住 Cmd 並按一下以{0}\n{1}"
+    },
+    "vs/platform/storage/electron-main/storageMainService": {
+      "storageError.detail": "Cursor 可能仍在關閉。請稍候片刻再重新啟動。\n\n儲存檔案損毀、遭移動或發生權限問題時，也可能出現此情況。\n\n儲存路徑：{0}"
+    },
+    "vs/platform/environment/node/argv": {
+      "experimentalApis": "為延伸模組啟用建議的 API 功能。 可接收一或多個延伸模組識別碼，以個別啟用。"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "cursor-language-pack",
+  "private": true,
+  "version": "1.1.0",
+  "description": "Cursor 简体中文开源集成：界面语言包、原文切换与 Argos 本机翻译。Windows x64；适配 Cursor 3.27.6、3.27.12，其他版本需先核验。",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "scripts": {
+    "detect": "node scripts/detect-cursor.mjs",
+    "extract": "node scripts/extract.mjs",
+    "audit": "node scripts/audit-manifest.mjs",
+    "gap": "node scripts/gap.mjs",
+    "check-upgrade": "node scripts/check-upgrade.mjs",
+    "test": "node scripts/run-tests.mjs",
+    "sync": "node scripts/sync-upstream.mjs",
+    "build": "node scripts/build.mjs",
+    "coverage": "node scripts/coverage.mjs",
+    "validate": "node scripts/validate-dist.mjs",
+    "package": "node scripts/package.mjs",
+    "translate": "node scripts/translate-install.mjs",
+    "publish:ovsx": "node scripts/publish.mjs --registry=ovsx",
+    "publish:vsce": "node scripts/publish.mjs --registry=vsce",
+    "verify": "node scripts/build.mjs && node scripts/validate-dist.mjs && node scripts/coverage.mjs",
+    "clean": "node -e \"for (const d of ['dist','reports']) require('fs').rmSync(d,{recursive:true,force:true})\"",
+    "test:offline": "node scripts/test-offline.mjs",
+    "verify:all": "npm test && npm run verify",
+    "check:repo": "node scripts/check-repository.mjs"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "3.2.1",
+    "opencc-js": "1.4.1",
+    "ovsx": "0.10.1",
+    "jsdom": "26.1.0"
+  },
+  "$devDependencies": "opencc-js is only used by scripts/convert-zh-tw.mjs, which regenerates the zh-tw sources from zh-cn. It is declared so `npm ci` keeps it available."
+}

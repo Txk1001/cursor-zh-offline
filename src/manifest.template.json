@@ -1,0 +1,51 @@
+{
+  "name": "${NAME}",
+  "displayName": "${DISPLAY_NAME}",
+  "description": "${DESCRIPTION}",
+  "version": "${VERSION}",
+  "publisher": "${PUBLISHER}",
+  "license": "${LICENSE}",
+  "icon": "${ICON}",
+  "engines": {
+    "vscode": "${ENGINE_VSCODE}"
+  },
+  "categories": [
+    "Language Packs"
+  ],
+  "$keywords": "Search terms, most valuable first. build.mjs also appends packaged locale ids. Chinese users search 汉化 / 中文翻译 more often than 'language pack'.",
+  "keywords": [
+    "cursor",
+    "cursor ide",
+    "汉化",
+    "中文翻译",
+    "中文",
+    "Cursor汉化",
+    "Cursor中文",
+    "中文语言包",
+    "中文界面",
+    "界面汉化",
+    "语言包",
+    "漢化",
+    "語言包",
+    "简体中文",
+    "繁體中文",
+    "chinese",
+    "chinese language pack",
+    "language pack",
+    "localization",
+    "本地化",
+    "l10n",
+    "i18n"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "${REPOSITORY}"
+  },
+  "homepage": "${HOMEPAGE}",
+  "bugs": {
+    "url": "${BUGS_URL}"
+  },
+  "contributes": {
+    "localizations": []
+  }
+}

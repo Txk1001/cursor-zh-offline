@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { findCursorInstalls, readCursorInfo, cursorAppRoot } from './lib/cursor-paths.mjs';
+import { assertCursorStopped } from './translate-install.mjs';
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const args = process.argv.slice(2);
+const selected = args.find(a=>a.startsWith('--dir='));
+const installs = selected ? [{installRoot:path.resolve(selected.slice(6)),appRoot:cursorAppRoot(path.resolve(selected.slice(6)))}] : findCursorInstalls();
+if (installs.length !== 1) throw new Error('无法唯一确定安装目录，请使用 --dir="包含 resources/app 的目录"。');
+const install = installs[0];
+const config = JSON.parse(fs.readFileSync(path.join(root,'config.json'),'utf8'));
+const info = readCursorInfo(install.appRoot);
+if (!(config.target.runtimeVerifiedCursorVersions ?? config.target.verifiedCursorVersions).includes(info.cursorVersion)) throw new Error('当前 Cursor 版本未适配。请先进行版本适配检查。');
+const patchArgs = [path.join(root,'scripts/translate-install.mjs'), ...args, '--force-language-pack'];
+if (!args.includes('--preview')) assertCursorStopped(install.installRoot);
+const result = spawnSync(process.execPath,patchArgs,{stdio:'inherit',windowsHide:true});
+process.exit(result.status ?? 1);

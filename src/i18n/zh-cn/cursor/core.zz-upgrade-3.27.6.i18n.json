@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "contents": {
+    "vs/workbench/contrib/composer/browser/promptInput/pathless-video-toast": {
+      "cloudUnsupportedAttachmentRejected": "无法向云端智能体添加此文件作为附件。",
+      "pathlessDocumentRejected": "无法添加此文档。请先将其保存为文件，再重新添加附件。",
+      "pathlessVideoRejected": "无法添加此视频。请先将其保存为文件，再重新添加附件。"
+    },
+    "vs/workbench/services/agentData/browser/queueItemEditSaves": {
+      "queuedMessageUpdateFailed": "更新排队中的消息失败。"
+    },
+    "vs/workbench/services/cursorAuth/browser/authenticationService.contribution": {
+      "cursorManagedDeploymentConfigurationTitle": "受管理的部署",
+      "cursor.deployment.authorizationEndpoint": "仅适用于 Cursor Orbit：此部署的 OAuth 授权端点的 HTTPS URL，由设备管理配置。必填。",
+      "cursor.deployment.backendUrl": "仅适用于 Cursor Orbit：DeploymentId 所指定部署的 API 的 HTTPS 源地址，由设备管理配置。必填。",
+      "cursor.deployment.clientId": "仅适用于 Cursor Orbit：Cursor 在此部署的身份提供方中注册的 OAuth 客户端 ID；签发的令牌将此 ID 作为受众。由设备管理配置。必填。",
+      "cursor.deployment.emailDomains": "仅适用于 Cursor Orbit：允许登录此部署的账户邮箱域名，以逗号分隔，仅支持精确匹配。由设备管理配置。必填。",
+      "cursor.deployment.issuer": "仅适用于 Cursor Orbit：此部署登录令牌的签发者，必须是 HTTPS URL，且与令牌中的 iss 声明完全一致。由设备管理配置。必填。",
+      "cursor.deployment.revocationEndpoint": "仅适用于 Cursor Orbit：此部署的 OAuth 撤销端点的 HTTPS URL，必须与签发者同源。由设备管理配置。必填。",
+      "cursor.deployment.tokenEndpoint": "仅适用于 Cursor Orbit：此部署的 OAuth 令牌端点的 HTTPS URL，必须与签发者同源。由设备管理配置。必填。",
+      "cursor.deployment.websiteUrl": "仅适用于 Cursor Orbit：此部署网站的 HTTPS 源地址，由设备管理配置。必填。"
+    },
+    "vs/workbench/services/workspaceConnection/browser/workspaceConnectionService": {
+      "workspaceConnection.reconnectFailedNamed": "重新连接失败，“{0}”仍处于断开状态。",
+      "workspaceConnection.reconnectGaveUpNamed": "无法重新连接到“{0}”。"
+    }
+  }
+}

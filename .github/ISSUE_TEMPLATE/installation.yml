@@ -1,0 +1,20 @@
+name: 安装、回滚或性能问题
+description: 反馈失败阶段和复现条件
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: Cursor、维护包和系统版本
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 操作步骤与实际结果
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 脱敏错误信息
+      description: 不要上传 connection.json、聊天数据库、个人词典或完整用户目录。

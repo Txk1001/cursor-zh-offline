@@ -1,0 +1,43 @@
+{
+  "version": "1.0.0",
+  "contents": {
+    "vs/editor/browser/editorExtensions": {
+      "undo": "撤销"
+    },
+    "vs/platform/workspaces/electron-main/workspacesHistoryMainService": {
+      "newWindow": "新建窗口"
+    },
+    "vs/workbench/browser/actions/textInputActions": {
+      "undo": "撤销"
+    },
+    "vs/workbench/contrib/agents/browser/agentsQuickAccess": {
+      "agents.mru.noResults": "暂无最近使用的智能体"
+    },
+    "vs/workbench/contrib/aiConfig/browser/aiconfig.contribution": {
+      "cursor.composer.conversationDensity.compactRows": "适中",
+      "cursor.composer.editorConversationDensity.compactRows": "适中"
+    },
+    "vs/workbench/contrib/composer/electron-sandbox/webviewBrowserManager": {
+      "browserContextMenu.undo": "撤销"
+    },
+    "vs/workbench/contrib/extensions/browser/extensionsActions": {
+      "undo": "撤销"
+    },
+    "vs/workbench/contrib/remote/browser/remoteExplorer": {
+      "remote.autoForwardPortsSource.fallback.switchBack": "撤销"
+    },
+    "vs/workbench/contrib/search/browser/searchActionsRemoveReplace": {
+      "RemoveAction.label": "关闭"
+    },
+    "vs/workbench/services/progress/browser/progressService": {
+      "dismiss": "关闭"
+    },
+    "vs/workbench/contrib/debug/browser/linkDetector": {
+      "fileLinkWithPath": "按住 Ctrl 并单击以{0}\n{1}",
+      "fileLinkWithPathMac": "按住 Cmd 并单击以{0}\n{1}"
+    },
+    "vs/platform/storage/electron-main/storageMainService": {
+      "storageError.detail": "Cursor 可能仍在关闭。请稍等片刻后重启。\n\n存储文件损坏、被移动或存在权限问题时，也可能发生此情况。\n\n存储路径：{0}"
+    }
+  }
+}

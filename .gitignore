@@ -1,0 +1,54 @@
+# Build output
+dist/
+*.vsix
+
+# Upstream translation cache (re-created by `npm run sync`, pinned via config.json)
+upstream/
+
+# Metadata extracted from a local Cursor installation (machine specific)
+metadata/*
+# Public provenance is source material, required for clean clones and releases.
+!metadata/community-sources.json
+
+# Generated reports
+reports/
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Editor / OS / local tooling
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+# Local Cursor project state (rules, MCP, debug logs). Agent notes for clones: AGENTS.md
+.cursor/
+*.swp
+
+# Temp probes and local scratch
+.tmp-*
+*.local.json
+.env
+.env.*
+
+# Offline assets belong in release archives; user states never belong in git
+offline/assets/
+**/connection.json
+**/translations.sqlite3*
+**/terms.user.json
+release/
+*.zip
+*.sha256
+*.partial
+SHA256SUMS
+__pycache__/
+*.pyc
+**/runtime.json
+**/history-translations.zh-cn.json
+**/rewrite.json
+**/backup/
