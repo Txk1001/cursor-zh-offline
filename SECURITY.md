@@ -4,7 +4,7 @@
 
 ## 报告问题
 
-当前尚未配置公开 GitHub 仓库或专用安全邮箱。请通过交付渠道联系维护者并发送脱敏复现步骤；不要公开漏洞利用所需的私人令牌或用户资料。将来启用 GitHub Private vulnerability reporting 后，应优先使用该仓库的 Security 页面私密报告。
+公开仓库为 [Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。一般问题可提交脱敏 Issue；涉及凭据或可利用漏洞时，请先通过既有交付渠道联系维护者，不要公开私人令牌、用户资料或漏洞利用细节。目前尚未配置专用安全邮箱，也不声称已经启用 GitHub Private vulnerability reporting；未来启用后应优先使用仓库的 Security 页面私密报告。
 
 报告包含：受影响版本、系统架构、触发条件、实际影响、最小公共示例和建议缓解方式。维护响应时间尚未承诺，不应假定存在全天候支持。
 

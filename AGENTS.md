@@ -1,6 +1,6 @@
 # Agent notes · cursor-zh-offline
 
-This is an independent local integration derived from the projects credited in LICENSE and NOTICE. The upstream marketplace identity is reference material only. No GitHub repository or publishing account has been configured for this integration.
+This is an independent integration derived from the projects credited in LICENSE and NOTICE. The upstream marketplace identity is reference material only. Its public source repository is https://github.com/Txk1001/cursor-zh-offline. Marketplace publication remains disabled.
 
 ## Scope and source of truth
 

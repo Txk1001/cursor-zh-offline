@@ -1,6 +1,6 @@
 # 维护、构建与发布
 
-项目当前交付为本地完整源码仓库和安装包。GitHub 账号与远端地址尚未提供，本轮不创建公开仓库、不推送、不打远端标签。不要把上游仓库地址填成本项目地址。当前市场发布关闭。
+项目源码仓库为 [Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。本地 1.1.0 安装包已经交付；GitHub Release、远端 CI 和扩展市场的状态需分别核验，不从源码上传推断成功。当前市场发布关闭。
 
 ## 干净源码构建
 
@@ -47,9 +47,9 @@ pwsh -File scripts/verify-archive.ps1 -RequireOffline -ArchivePath "release/curs
 
 手动启动 Release 工作流只上传 Actions 构建产物。推送匹配 `config.json` 版本的 `v*` 标签才创建 GitHub **预发布**。该流程不调用 Open VSX 或 VS Marketplace，不需要它们的发布令牌。未经授权不推送标签；本机验证通过不能记作远端 CI 成功。
 
-将来用户提供账号并授权发布后：
+后续发布流程：
 
-1. 由仓库所有者创建实际仓库，配置 `config.json` 中 repository、homepage、bugs，并审查本地提交内容。
+1. 核对仓库所有者及 `config.json` 中 repository、homepage、bugs，审查待发布提交；不得复用上游身份。
 2. 推送源码，实际运行 CI，记录运行链接与结果。
 3. 完成 [实机验收清单](VALIDATION.md)，确认版本与全部产物一致。
 4. 经授权推送对应版本标签，工作流创建预发布；检查资产、校验值和说明。

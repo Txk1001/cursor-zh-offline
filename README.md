@@ -2,7 +2,7 @@
 
 复用社区语言包，为 Cursor 提供简体中文界面，并用本机离线模型显示历史会话的中文译文。支持随时查看原文；不改写聊天数据库。
 
-**当前为 1.1.0 预览版。交付形式是本地源码仓库与安装包，尚未上传 GitHub 或发布扩展市场。**使用独立本地扩展标识 `cursor-zh-offline-local.cursor-language-pack`，不继承上游发布账号或权限。默认仅构建简体中文。
+**当前为 1.1.0 预览版。开源仓库：[Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。**安装包目前由本地交付提供，尚未发布 GitHub Release 或扩展市场。使用独立扩展标识 `cursor-zh-offline-local.cursor-language-pack`，不继承上游发布账号或权限。默认仅构建简体中文。
 
 ## 适配范围
 
@@ -102,5 +102,5 @@ pwsh -File scripts/build-public-archive.ps1 -WithOffline -OutputPath "release/cu
 
 保留上游版权，项目改动遵循 [MIT](LICENSE)。模型、第三方软件遵循各自许可；来源与署名见 [NOTICE](NOTICE)、[离线依赖说明](offline/THIRD-PARTY.md) 和 [资产清单](offline/assets.json)。本项目与 Cursor 官方无隶属关系。
 
-当前无独立公开仓库 URL。将来由仓库所有者配置实际仓库、问题入口与发布权限，不能把本项目问题转交上游，也不能冒用上游市场身份。
+问题反馈请使用[本项目 Issues](https://github.com/Txk1001/cursor-zh-offline/issues)，提交前按模板移除账号、令牌、私人对话和用户路径。上游来源与许可见 NOTICE；本项目的问题由本仓库跟踪。
 

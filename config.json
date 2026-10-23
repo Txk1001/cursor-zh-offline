@@ -5,9 +5,9 @@
   "namePrefix": "cursor-language-pack",
   "version": "1.1.0",
   "license": "MIT",
-  "repository": null,
-  "homepage": null,
-  "bugs": null,
+  "repository": "https://github.com/Txk1001/cursor-zh-offline",
+  "homepage": "https://github.com/Txk1001/cursor-zh-offline#readme",
+  "bugs": "https://github.com/Txk1001/cursor-zh-offline/issues",
   "icon": "media/icon.png",
   "$icon": "Copied into each packaged extension by scripts/build.mjs. 128x128 PNG.",
   "engines": {
