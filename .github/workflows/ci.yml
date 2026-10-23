@@ -1,0 +1,44 @@
+name: CI
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  checks:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run check:repo
+      - run: npm run sync -- --strategy=api
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: npm run verify
+      - run: npm run package -- --skip-build
+      - name: Build and validate source archive
+        shell: pwsh
+        run: ./scripts/build-public-archive.ps1 -SourceOnly -OutputPath "${{ runner.temp }}/cursor-zh-source.zip"
+      - name: Prepare isolated offline runtime
+        if: runner.os == 'Windows'
+        run: node scripts/setup-offline.mjs --download --state="${{ runner.temp }}/cursor-zh-test"
+      - name: Test actual offline runtime
+        if: runner.os == 'Windows'
+        run: npm run test:offline -- --state="${{ runner.temp }}/cursor-zh-test"
+      - name: Build and validate full archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/build-public-archive.ps1 -WithOffline -OutputPath "${{ runner.temp }}/cursor-zh-offline.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cursor-zh-${{ runner.os }}
+          path: |
+            dist/*.vsix
+            ${{ runner.temp }}/cursor-zh-*.zip
+            ${{ runner.temp }}/cursor-zh-*.zip.sha256
