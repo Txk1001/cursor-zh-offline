@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import {withInstallationLock as withLock} from './installation-lock.mjs';
 
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const digest = file => fs.existsSync(file) ? hash(fs.readFileSync(file)) : null;
@@ -22,20 +23,6 @@ export function writeFileAtomic(file, bytes) {
 }
 
 const saveJournal = (file, value) => writeFileAtomic(file, JSON.stringify(value,null,2)+'\n');
-
-function withLock(journalPath, action) {
-  const lock=journalPath+'.lock';fs.mkdirSync(path.dirname(lock),{recursive:true});
-  if(fs.existsSync(lock)){
-    const owner=JSON.parse(fs.readFileSync(lock,'utf8'));
-    let alive=true;
-    try{process.kill(owner.pid,0)}catch(error){if(error.code==='ESRCH')alive=false}
-    if(alive)throw Error('另一个安装或恢复进程仍在运行，请稍后重试');
-    fs.unlinkSync(lock);
-  }
-  const fd=fs.openSync(lock,'wx',0o600);
-  try{fs.writeFileSync(fd,JSON.stringify({pid:process.pid}));return action()}
-  finally{fs.closeSync(fd);fs.unlinkSync(lock)}
-}
 
 export function recoverFileTransaction(options) {
   return withLock(options.journalPath,()=>recoverUnlocked(options));
