@@ -31,7 +31,7 @@
     "lint:md": "markdownlint-cli2"
   },
   "devDependencies": {
-    "@vscode/vsce": "3.2.1",
+    "@vscode/vsce": "4.0.0",
     "jsdom": "26.1.0",
     "markdownlint-cli2": "0.24.0",
     "opencc-js": "1.4.1",
