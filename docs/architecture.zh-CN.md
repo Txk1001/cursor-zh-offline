@@ -6,7 +6,7 @@
 
 `microsoft/vscode-loc` 的固定 commit 提供编辑器中文基线；`src/i18n/zh-cn/` 合并 Cursor 词条。构建拥有 `vscode` 翻译标识；同一标识只选一个语言包文件，因此不能依靠同时安装两个语言包逐词合并。安装器处理已知语言包冲突。
 
-`scripts/build.mjs` 产出扩展目录，`scripts/package.mjs` 产出 VSIX。存在本机元数据时按实际键过滤并核对占位符；干净源码构建使用公开键，不需要用户机器元数据。扩展运行代码负责必要的语言设置、冲突提示和离线服务维护。
+`scripts/build.mjs` 产出扩展目录，`scripts/package.mjs` 产出 VSIX。默认 public 配置不读取本机元数据；显式 --profile=local 才按实际键过滤并核对占位符，不能将其产物作为公共发行。扩展运行代码负责必要的语言设置、冲突提示和离线服务维护。
 
 ## 硬编码界面
 

@@ -17,9 +17,8 @@
  *   3. src/i18n/<locale>/cursor/core.i18n.json    Cursor strings living in the core
  *   4. src/i18n/<locale>/cursor/*.i18n.json       Cursor built-in extension strings
  *
- * `metadata/cursor.json` (from `npm run extract`) is optional. When present, keys
- * that do not exist in the local Cursor build are dropped. When absent - as in CI -
- * filtering is skipped so the build still succeeds.
+ * Public builds never read `metadata/cursor.json`. Use --profile=local explicitly
+ * for installation-specific filtering and marker repair.
  *
  * Usage: npm run build [-- --locale=zh-cn] [--mode=full] [--no-filter] [--no-repair]
  */
