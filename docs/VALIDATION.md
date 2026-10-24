@@ -12,8 +12,8 @@
 | 1.1.2 技术保护 | 8 项独立 Python 规则本机通过并接入 CI；真实模型、原文切换与 UI 须分别记录 |
 | 1.1.2 汉化 | 维护扩展命令与设置已使用标准中文清单资源；历史日期/大写时间单位已补齐；需当前 Cursor 窗口复核 |
 | 1.1.2 公共构建 | 默认 public 配置，不读取本机元数据或私人词典；结构检查通过；构建和归档记录来源、参数与哈希 |
-| 1.1.2 远端 CI | 待本次修复 PR 对应提交实际运行，不继承 1.1.1 结果 |
-| 当前电脑 | Cursor 3.27.12 / Code OSS 1.128.0，commit df132ffba90dfc15a12e6b8f020ba4e5d026c4b0；逐项安装和 UI 结果另行登记 |
+| 1.1.2 远端 CI | [CI 40103796905](https://github.com/Txk1001/cursor-zh-offline/actions/runs/40103796905) 对 e7dbe8d 的 Windows 与 Linux 检查成功；[候选流程 40103901333](https://github.com/Txk1001/cursor-zh-offline/actions/runs/40103901333) 成功。后续提交以 [PR #11 检查](https://github.com/Txk1001/cursor-zh-offline/pull/11/checks) 为准 |
+| 当前电脑 | Cursor 3.27.12 / Code OSS 1.128.0，commit df132ffba90dfc15a12e6b8f020ba4e5d026c4b0；开发过程快照曾安装并还原；最终候选重装与 UI 核对因用户办公暂停，不能计为最终实机通过 |
 | 独立 Windows | 用户本轮暂无法提供，明确待验收；无系统 Node/Python 的真实用户环境未通过 |
 | macOS/Linux/ARM64 | 完整补丁不开放，不从语言资源覆盖推断支持 |
 | 安全上报 | 私密漏洞报告已启用并核实；npm 已知告警与依赖处置见 [依赖审查](DEPENDENCY-REVIEW.md) |
