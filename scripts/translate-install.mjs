@@ -215,6 +215,10 @@ const MODE_PARTS = [
 
 /** Quoted literals that are shown as-is, not as a `label:` / `title:` field. */
 const BARE_LABELS = [
+  'Open Browser',
+  'New Agent',
+  'Show Chat History',
+  'Show Chat History (Editor)',
   'Send follow-up',
   'Send follow-up with subagent',
   'Open App',

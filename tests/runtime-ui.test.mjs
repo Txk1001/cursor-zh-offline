@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';import fs from 'node:fs';import {JSDOM} 
 import {injectRuntimeOverrides,rewrite} from '../scripts/translate-install.mjs';
 const overrides=JSON.parse(fs.readFileSync(new URL('../runtime-overrides.zh-cn.json',import.meta.url),'utf8'));
 const dict=JSON.parse(fs.readFileSync(new URL('../src/i18n/zh-cn/hardcoded.json',import.meta.url),'utf8'));
+assert.equal(rewrite('const title=`Open Browser`,id="browser.open";',dict).text,'const title=`打开浏览器`,id="browser.open";');
 for(const title of ['Extend Cursor with Plugins','Connect External Tools with MCP','Teach Cursor New Skills','Delegate Work to Subagents','Guide Agent with Rules','Create Reusable Commands']){
  const source=`const card={title:${JSON.stringify(title)},id:"plugins",docsUrl:"https://fixture.invalid/plugins"};`;
  const patched=rewrite(source,dict).text;
