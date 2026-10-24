@@ -33,3 +33,9 @@
 
 在全部必需的实际场景通过前，保持预览发布状态，不承诺全版本、全系统或任意正文达到人工汉化水平。
 
+
+## 1.1.1 远端 CI 记录（2026-10-24）
+
+[CI 40084459155](https://github.com/Txk1001/cursor-zh-offline/actions/runs/40084459155) 对实现提交 `9be4e59b4c66db1a1d247341ce8a1707c71aaff4` 的 Ubuntu 和 Windows 任务均为 success，Windows 包含真实离线模型与完整归档检查。没有本机 Cursor 元数据的 runner 只报告结构验证，不报告已安装版本键覆盖率。后续发布流程会对版本标签重新测试与构建。
+
+远端 CI 通过不代表真实 Cursor 全页、新 Windows 用户、macOS 或 ARM64 的完整安装验收通过。测试目录与旧构建保留，不执行自动批量清理。
