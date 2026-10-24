@@ -1,6 +1,5 @@
 # cursor-zh-offline · Cursor 简体中文离线集成
 
-
 复用社区语言包，为 Cursor 提供简体中文界面，并用本机离线模型显示历史会话的中文译文。支持随时查看原文；不改写聊天数据库。
 
 **当前为 1.1.1 预览版。开源仓库：[Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。**安装包与 SHA-256 校验值见[预览版下载](https://github.com/Txk1001/cursor-zh-offline/releases)。当前未发布扩展市场。使用独立扩展标识 `cursor-zh-offline-local.cursor-language-pack`，不继承上游发布账号或权限。默认仅构建简体中文。
