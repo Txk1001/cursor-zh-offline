@@ -37,7 +37,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: ./scripts/build-public-archive.ps1 -WithOffline -OutputPath "${{ runner.temp }}/cursor-zh-offline.zip"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: cursor-zh-${{ runner.os }}
           path: |
