@@ -26,7 +26,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {
-  p, readJson, writeJson, deepMerge, listFiles, rmrf, log, fail, parseArgs, loadConfig
+  p, readJson, writeJson, deepMerge, listFiles, preserveGeneratedPath, log, fail, parseArgs, loadConfig
 } from './lib/util.mjs';
 import { markerMismatches } from './lib/markers.mjs';
 
@@ -513,7 +513,7 @@ for (const [modeId, mode] of modes) {
     const name = `${config.namePrefix}${group.suffix}${mode.nameSuffix ?? ''}`;
     const outDir = p('dist', name);
     log.step(`Building ${name}  (mode=${modeId}, locales=${group.localeList.map((l) => l.id).join(', ')})`);
-    rmrf(outDir);
+    preserveGeneratedPath(outDir);
 
     const localizations = [];
     const localeStats = [];

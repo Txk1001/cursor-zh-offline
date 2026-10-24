@@ -1,4 +1,4 @@
-# Cursor 简体中文离线集成 · 1.1.0
+# Cursor 简体中文离线集成 · 1.1.1
 
 这是 cursor-zh-offline 开源项目的集成语言包，复用 polang233/cursor-language-pack、Microsoft 中文资源和 Argos Translate。完整安装器适用于 Windows x64 / Cursor 3.27.6、3.27.12；默认启用简体，未知版本会停止写入并提示适配。该扩展使用独立标识，未发布到扩展市场。
 

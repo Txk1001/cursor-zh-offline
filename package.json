@@ -1,7 +1,7 @@
 {
   "name": "cursor-language-pack",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Cursor 简体中文开源集成：界面语言包、原文切换与 Argos 本机翻译。Windows x64；适配 Cursor 3.27.6、3.27.12，其他版本需先核验。",
   "type": "module",
   "license": "MIT",
@@ -23,8 +23,8 @@
     "translate": "node scripts/translate-install.mjs",
     "publish:ovsx": "node scripts/publish.mjs --registry=ovsx",
     "publish:vsce": "node scripts/publish.mjs --registry=vsce",
-    "verify": "node scripts/build.mjs && node scripts/validate-dist.mjs && node scripts/coverage.mjs",
-    "clean": "node -e \"for (const d of ['dist','reports']) require('fs').rmSync(d,{recursive:true,force:true})\"",
+    "verify": "node scripts/verify.mjs",
+    "clean": "node -e \"console.error('自动批量清理已禁用；需要清理时请由用户手动处理。');process.exit(1)\"",
     "test:offline": "node scripts/test-offline.mjs",
     "verify:all": "npm test && npm run verify",
     "check:repo": "node scripts/check-repository.mjs"

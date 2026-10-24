@@ -19,7 +19,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { p, readJson, writeJson, log, parseArgs, loadConfig, rmrf } from './lib/util.mjs';
+import { p, readJson, writeJson, log, parseArgs, loadConfig, preserveGeneratedPath } from './lib/util.mjs';
 
 const CONCURRENCY = 8;
 const UA = 'cursor-language-pack-build';
@@ -157,7 +157,7 @@ async function main() {
 
     const prefix = `${locale.upstreamPackDir.replace(/\/+$/, '')}/translations/`;
     const destRoot = p('upstream', locale.id);
-    if (flags.force) rmrf(destRoot);
+    if (flags.force) preserveGeneratedPath(destRoot);
 
     let jobs;
     let strategy = requestedStrategy;

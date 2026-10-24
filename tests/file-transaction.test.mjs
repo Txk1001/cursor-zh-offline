@@ -45,5 +45,5 @@ try{
 }finally{
  fs.writeFileSync=realWrite;fs.renameSync=realRename;
  assert(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep+'cursor-zh-transaction-'));
- fs.rmSync(root,{recursive:true,force:true});
+ console.log('隔离测试目录已保留，供复查。');
 }

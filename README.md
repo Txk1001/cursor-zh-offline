@@ -2,13 +2,13 @@
 
 复用社区语言包，为 Cursor 提供简体中文界面，并用本机离线模型显示历史会话的中文译文。支持随时查看原文；不改写聊天数据库。
 
-**当前为 1.1.0 预览版。开源仓库：[Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。**安装包目前由本地交付提供，尚未发布 GitHub Release 或扩展市场。使用独立扩展标识 `cursor-zh-offline-local.cursor-language-pack`，不继承上游发布账号或权限。默认仅构建简体中文。
+**当前为 1.1.1 预览版。开源仓库：[Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。**安装包目前由本地交付提供，尚未发布 GitHub Release 或扩展市场。使用独立扩展标识 `cursor-zh-offline-local.cursor-language-pack`，不继承上游发布账号或权限。默认仅构建简体中文。
 
 ## 适配范围
 
 | 环境 | 范围与状态 |
 | --- | --- |
-| Windows x64 / Cursor 3.27.6、3.27.12 / Code OSS 1.128.0 | 当前完整补丁准入范围；此前版本有本机安装和界面记录，1.1.0 的测试结果需结合交付验收记录查看 |
+| Windows x64 / Cursor 3.27.6、3.27.12 / Code OSS 1.128.0 | 当前完整补丁准入范围；此前版本有本机安装和界面记录，1.1.1 的测试结果需结合交付验收记录查看 |
 | 其他 Cursor 版本 | 安装器拒绝完整补丁，需先完成版本适配 |
 | macOS、Linux、Windows ARM64 | 完整补丁未开放；语言包源码可供移植，不构成已支持承诺 |
 | 新 Windows 用户、远端 GitHub Actions | 仍需独立验收；本机测试不代表这些环境已通过 |
@@ -19,9 +19,9 @@
 
 | 文件 | 用途 |
 | --- | --- |
-| `cursor-zh-offline-1.1.0-Windows-x64-offline.zip` | 普通用户安装：VSIX、安装脚本、Python、模型、锁定依赖与许可齐全 |
-| `cursor-zh-offline-1.1.0-source.zip` | 开发者源码：不含构建产物、模型、运行时、下载缓存或个人状态；首次构建需要联网 |
-| `cursor-language-pack-1.1.0.vsix` | 标准界面语言包与维护扩展；单独安装不包含硬编码界面补丁或离线模型 |
+| `cursor-zh-offline-1.1.1-Windows-x64-offline.zip` | 普通用户安装：VSIX、安装脚本、Python、模型、锁定依赖与许可齐全 |
+| `cursor-zh-offline-1.1.1-source.zip` | 开发者源码：不含构建产物、模型、运行时、下载缓存或个人状态；首次构建需要联网 |
+| `cursor-language-pack-1.1.1.vsix` | 标准界面语言包与维护扩展；单独安装不包含硬编码界面补丁或离线模型 |
 | `SHA256SUMS` / ZIP 旁的 `.sha256` | 发布文件校验值；ZIP 内另有逐文件 `MANIFEST.sha256` |
 
 图标是源码所需的项目素材，包含在源码包中。此项目不分发 Cursor 原始程序资源。校验哈希可发现损坏，但不能替代可信发布者签名。
@@ -78,12 +78,12 @@ npm run package -- --skip-build
 
 ```powershell
 # 纯源码包，不要求已构建 VSIX
-pwsh -File scripts/build-public-archive.ps1 -SourceOnly -OutputPath "release/cursor-zh-offline-1.1.0-source.zip"
+pwsh -File scripts/build-public-archive.ps1 -SourceOnly -OutputPath "release/cursor-zh-offline-1.1.1-source.zip"
 
 # 在隔离状态目录准备、测试离线运行时，然后制作完整包
 node scripts/setup-offline.mjs --download --state=".tmp-offline-validation"
 npm run test:offline -- --state=".tmp-offline-validation"
-pwsh -File scripts/build-public-archive.ps1 -WithOffline -OutputPath "release/cursor-zh-offline-1.1.0-Windows-x64-offline.zip"
+pwsh -File scripts/build-public-archive.ps1 -WithOffline -OutputPath "release/cursor-zh-offline-1.1.1-Windows-x64-offline.zip"
 ```
 
 构建与测试不要求上传 GitHub；源码包可解压为独立仓库。详细说明见 [贡献指南](CONTRIBUTING.md)、[维护与发布](docs/publishing.zh-CN.md)、[架构](docs/architecture.zh-CN.md)、[术语表](docs/TERMINOLOGY-zh-CN.md)、[安全与隐私](SECURITY.md)、[变更记录](CHANGELOG.md)。

@@ -3,7 +3,7 @@
   "publisher": "cursor-zh-offline-local",
   "$publisher": "Local integration identity only; no marketplace namespace ownership or publication is claimed.",
   "namePrefix": "cursor-language-pack",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "MIT",
   "repository": "https://github.com/Txk1001/cursor-zh-offline",
   "homepage": "https://github.com/Txk1001/cursor-zh-offline#readme",

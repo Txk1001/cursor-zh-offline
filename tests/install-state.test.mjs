@@ -26,5 +26,5 @@ for(const options of [{vsix:null},{cli:null},{installPack:()=>false},{installPac
 assert(finalizeInstallation({packNeeded:false,setLocale:()=>{}}).complete);
 assert(finalizeInstallation({packNeeded:true,cli:'cursor',vsix:'pack',installPack:()=>true,setLocale:()=>{}}).complete);
 // Only this freshly created, resolved fixture directory is removed.
-assert(root.startsWith(path.join(os.tmpdir(),'cursor-zh-restore-')));fs.rmSync(root,{recursive:true});
+assert(root.startsWith(path.join(os.tmpdir(),'cursor-zh-restore-')));console.log('隔离测试目录已保留，供复查。');
 console.log('安装失败、缺失/损坏备份、冲突文件、部分恢复和重试：通过');

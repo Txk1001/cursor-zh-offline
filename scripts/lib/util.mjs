@@ -86,8 +86,19 @@ export function listFiles(dir, ext) {
     .map((f) => path.join(dir, f));
 }
 
-export function rmrf(target) {
-  fs.rmSync(target, { recursive: true, force: true });
+export function preserveGeneratedPath(target) {
+  const resolved=path.resolve(target);
+  const allowed=['dist','upstream'].some(name=>{
+    const rel=path.relative(p(name),resolved);
+    return rel && !rel.startsWith('..') && !path.isAbsolute(rel);
+  });
+  if(!allowed)throw Error('只能保留构建或上游缓存目录内的明确目标');
+  if(!fs.existsSync(resolved))return null;
+  const destination=p('reports','retained-builds',`${Date.now()}-${process.pid}-${path.basename(resolved)}`);
+  if(fs.existsSync(destination))throw Error('保留目录已存在，请稍后重试');
+  fs.mkdirSync(path.dirname(destination),{recursive:true});
+  fs.renameSync(resolved,destination);
+  return destination;
 }
 
 const USE_COLOR = process.stdout.isTTY && !process.env.NO_COLOR;

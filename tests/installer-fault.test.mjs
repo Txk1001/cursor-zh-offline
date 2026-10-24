@@ -24,4 +24,4 @@ process.argv=[process.execPath,fileURLToPath(${JSON.stringify(installer)}),'--di
   assert.deepEqual(record,{code:1,injected:true,appRestored:true,productRestored:true,ledgerExists:false},failed+'\n'+result.stdout);
  }
  console.log('真实安装入口：应用/校验信息/恢复记录部分写入失败均恢复，新用户及自定义路径：通过');
-}finally{assert(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep+'cursor-zh-main-fault-'));fs.rmSync(root,{recursive:true,force:true})}
+}finally{assert(path.resolve(root).startsWith(path.resolve(os.tmpdir())+path.sep+'cursor-zh-main-fault-'));console.log('隔离测试目录已保留，供复查。');}

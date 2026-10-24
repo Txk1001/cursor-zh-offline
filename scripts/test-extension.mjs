@@ -134,7 +134,7 @@ function parseable(text) {
   }
 }
 
-fs.rmSync(tmp, { recursive: true, force: true });
+console.log('隔离测试目录已保留，供复查。');
 
 if (failures) {
   log.step(`${failures} failure(s)`);
