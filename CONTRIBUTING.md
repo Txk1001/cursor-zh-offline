@@ -1,14 +1,15 @@
 # 贡献指南
 
-欢迎提交漏译、错译、版本适配与稳定性改进。当前交付为本地源码仓库；GitHub 地址建立后，使用该仓库的 Issues 与 Pull Requests。上游项目不能代收本集成版问题。
+欢迎通过 [本项目 Issues 与 Pull Requests](https://github.com/Txk1001/cursor-zh-offline) 提交漏译、错译、版本适配与稳定性改进。上游项目不能代收本集成版问题。
 
 ## 开发准备
 
-需要 Node.js 22；Windows 打包使用 PowerShell 7。从干净源码开始：
+开发基准为 Node.js 22、Python 3.12.10；Windows 打包使用 PowerShell 7。从干净源码开始：
 
 ```powershell
 npm ci
 npm test
+npm run test:protection
 npm run lint:md
 npm run sync -- --strategy=api
 npm run verify

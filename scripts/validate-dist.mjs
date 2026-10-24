@@ -35,9 +35,9 @@ const summary = readJson(summaryFile);
 const repairWasEnabled = summary.repairEnabled === true;
 
 const metadataFile = p('metadata', 'cursor.json');
-const metadata = fs.existsSync(metadataFile) ? readJson(metadataFile) : null;
+const metadata = summary.profile === 'local' && fs.existsSync(metadataFile) ? readJson(metadataFile) : null;
 if (!metadata) {
-  log.warn('metadata/cursor.json absent - source comparison checks are skipped (structural checks still run).');
+  log.warn('Public profile or absent local metadata: installed-source comparisons are skipped; structural checks still run.');
 }
 
 if (String(config.publisher).startsWith('CHANGE-ME')) {
@@ -189,6 +189,16 @@ for (const build of summary.builds) {
 
   // --- the optional runtime ---------------------------------------------
   if (manifest.main) {
+    const defaultsFile=path.join(outDir,'package.nls.json'),chineseFile=path.join(outDir,'package.nls.zh-cn.json');
+    if(!fs.existsSync(defaultsFile)||!fs.existsSync(chineseFile)) error(`${scope}: missing manifest localization resources`);
+    else {
+      const defaults=readJson(defaultsFile),chinese=readJson(chineseFile);
+      for(const match of JSON.stringify(manifest).matchAll(/"%([^%"]+)%"/g)) {
+        const key=match[1];
+        if(typeof defaults[key]!=='string'||!defaults[key].trim()||typeof chinese[key]!=='string'||!chinese[key].trim()) error(`${scope}: unresolved manifest localization key ${key}`);
+        else if(markerMismatches(defaults[key],chinese[key]).length) error(`${scope}: broken manifest localization markers ${key}`);
+      }
+    }
     const entry = path.join(outDir, manifest.main.replace(/^\.\//, ''));
     if (!fs.existsSync(entry)) error(`${scope}: main points at ${manifest.main}, which does not exist`);
     if (!Array.isArray(manifest.activationEvents) || !manifest.activationEvents.length) {

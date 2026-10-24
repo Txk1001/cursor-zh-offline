@@ -25,10 +25,14 @@ export function translateHistoryStatus(value) {
   let m = /^(Worked\s*for|Thought\s*for|Thought)\s+((?:\d+(?:\.\d+)?\s*(?:hours?|hrs?|h|minutes?|mins?|m|seconds?|secs?|s|days?|d)\s*)+)$/i.exec(value);
   if (m) return (m[1].replace(/\s/g,'').toLowerCase() === 'workedfor' ? '耗时 ' : '思考用时 ') + duration(m[2]);
   m = /^(\d+)\s*(s|m|h|d|w|mo|y|seconds?|minutes?|hours?|days?|weeks?|months?|years?)\s+ago$/i.exec(value);
-  if (m) return m[1] + ' ' + ({s:'秒',m:'分钟',h:'小时',d:'天',w:'周',mo:'个月',y:'年',second:'秒',minute:'分钟',hour:'小时',day:'天',week:'周',month:'个月',year:'年'}[m[2].toLowerCase().replace(/s$/,'')] || {s:'秒'}[m[2]]) + '前';
+  if (m) {
+    const unit=m[2].toLowerCase();
+    const units={s:'秒',m:'分钟',h:'小时',d:'天',w:'周',mo:'个月',y:'年',second:'秒',minute:'分钟',hour:'小时',day:'天',week:'周',month:'个月',year:'年'};
+    return m[1] + ' ' + (units[unit] ?? units[unit.replace(/s$/,'')]) + '前';
+  }
   m = /^(?:(Explored|已查看)\s*)?(\d+)\s+search(?:es)?$/.exec(value);
   if (m) return (m[1] ? '已查看 ' : '') + m[2] + ' 次搜索';
-  return ({Skipped:'已跳过',Asked:'已提问',Asking:'正在提问',Done:'已完成',briefly:'片刻','Just now':'刚刚'})[value] ?? value;
+  return ({Skipped:'已跳过',Asked:'已提问',Asking:'正在提问',Done:'已完成',briefly:'片刻','Just now':'刚刚',Today:'今天',Yesterday:'昨天'})[value] ?? value;
 }
 
 // This function is serialized into Cursor. It only changes visible text nodes.

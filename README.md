@@ -2,7 +2,7 @@
 
 复用社区语言包，为 Cursor 提供简体中文界面，并用本机离线模型显示历史会话的中文译文。支持随时查看原文；不改写聊天数据库。
 
-**当前为 1.1.1 预览版。开源仓库：[Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。**安装包与 SHA-256 校验值见[预览版下载](https://github.com/Txk1001/cursor-zh-offline/releases)。当前未发布扩展市场。使用独立扩展标识 `cursor-zh-offline-local.cursor-language-pack`，不继承上游发布账号或权限。默认仅构建简体中文。
+**当前源码为 1.1.2 候选版；最近公开版本为 [1.1.1 预览版](https://github.com/Txk1001/cursor-zh-offline/releases/tag/v1.1.1)。**开源仓库：[Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。候选包不等于已发布产品，实际验证状态统一见[验收状态](docs/VALIDATION.md)。当前未发布扩展市场。使用独立扩展标识 `cursor-zh-offline-local.cursor-language-pack`，不继承上游发布账号或权限。默认仅构建简体中文。
 
 ## 适配范围
 
@@ -11,7 +11,8 @@
 | Windows x64 / Cursor 3.27.6、3.27.12 / Code OSS 1.128.0 | 当前完整补丁准入范围；此前版本有本机安装和界面记录，1.1.1 的测试结果需结合交付验收记录查看 |
 | 其他 Cursor 版本 | 安装器拒绝完整补丁，需先完成版本适配 |
 | macOS、Linux、Windows ARM64 | 完整补丁未开放；语言包源码可供移植，不构成已支持承诺 |
-| 新 Windows 用户、远端 GitHub Actions | 仍需独立验收；本机测试不代表这些环境已通过 |
+| 远端 GitHub Actions | 1.1.1 与文档门禁已有成功记录；1.1.2 须按本次提交重新检查 |
+| 独立 Windows 环境 | 尚未提供，保留为公开预览验收阻断项 |
 
 界面译文、正文自动翻译和第三方内容的覆盖范围不同。图片中的文字、未加载的会话、第三方扩展或网页不保证覆盖；模型自动译文仍可能出错，界面会标注“未校对”。技术内容与原文可随时核对。详见 [验收清单](docs/VALIDATION.md)。
 
@@ -33,7 +34,7 @@
 3. 双击 `安装离线汉化.cmd`。如只需界面中文，双击 `安装汉化.cmd`。
 4. 重新打开 Cursor。在历史页点击“启用离线翻译”，选择安装器提示的 `~/.cursor/cursor-language-pack/offline/connection.json` 完成首次本机配对。
 
-完整包不需要系统 Python、显卡或在线翻译账号。优先使用系统 Node.js；没有 Node 时尝试 Cursor 自带运行时。源码维护建议使用 Node.js 22 和 PowerShell 7。自定义安装目录或多安装时执行：
+完整包不需要系统 Python、显卡或在线翻译账号。优先使用系统 Node.js；没有 Node 时尝试 Cursor 自带运行时。维护工具最低 Node.js 22，CI 使用 Node.js 22、Python 3.12.10；归档使用 PowerShell 7。普通用户无系统 Node/Python 的真实环境仍待独立验收。自定义安装目录或多安装时执行：
 
 ```powershell
 node scripts/portable-install.mjs --dir="D:\Apps\Cursor" --with-offline
@@ -69,12 +70,14 @@ node scripts/translate-install.mjs --undo --dir="D:\Apps\Cursor"
 ```powershell
 npm ci
 npm test
+npm run test:protection
+npm run lint:md
 npm run sync -- --strategy=api
 npm run verify
 npm run package -- --skip-build
 ```
 
-上游资源按 `config.json` 的 commit 固定，`metadata/community-sources.json` 是必须提交的公共来源记录。其余本机提取元数据与下载缓存不提交。
+上游资源按 `config.json` 的 commit 固定，`metadata/community-sources.json` 是必须提交的公共来源记录。其余本机提取元数据与下载缓存不提交。默认构建配置为 `public`，不会读取本机元数据；只有显式 `npm run build -- --profile=local` 才执行本机过滤和诊断，不可将该产物作为公共发行包。`npm run coverage` 统计语言资源键，不是代码执行覆盖率。
 
 ```powershell
 # 纯源码包，不要求已构建 VSIX

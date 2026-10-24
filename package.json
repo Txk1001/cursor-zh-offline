@@ -1,12 +1,12 @@
 {
   "name": "cursor-language-pack",
   "private": true,
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Cursor 简体中文开源集成：界面语言包、原文切换与 Argos 本机翻译。Windows x64；适配 Cursor 3.27.6、3.27.12，其他版本需先核验。",
   "type": "module",
   "license": "MIT",
   "engines": {
-    "node": ">=18.17.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "detect": "node scripts/detect-cursor.mjs",
@@ -28,7 +28,8 @@
     "test:offline": "node scripts/test-offline.mjs",
     "verify:all": "npm test && npm run verify",
     "check:repo": "node scripts/check-repository.mjs",
-    "lint:md": "markdownlint-cli2"
+    "lint:md": "markdownlint-cli2",
+    "test:protection": "python tests/offline-protection.test.py"
   },
   "devDependencies": {
     "@vscode/vsce": "3.2.1",

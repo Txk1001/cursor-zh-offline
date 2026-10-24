@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url';
 import { p, readJson, writeJson, log, fail, parseArgs, loadConfig } from './lib/util.mjs';
 import { findCursorInstalls, readCursorInfo, extensionsDir, argvJsonPath, cursorAppRoot } from './lib/cursor-paths.mjs';
 import { readHistoryCatalog, historyBootstrap, translateHistoryStatus } from './lib/history-localization.mjs';
+import {withInstallationLock} from './lib/installation-lock.mjs';
 import { restoreTrackedFiles, finalizeInstallation, activeExtensionNames, findVersionedVsix } from './lib/install-state.mjs';
 import { offlineMainBootstrap } from './lib/offline-host.mjs';
 import { applyFileTransaction, recoverFileTransaction, writeFileAtomic } from './lib/file-transaction.mjs';
@@ -1248,6 +1249,10 @@ if(flags['with-offline']&&!flags.preview&&!flags.undo){
 }
 
 if (flags.undo) {
+  withInstallationLock(journalPath, () => {
+  if (fs.existsSync(journalPath)) fail('检测到新的未完成事务，已保留现场；请重新运行以先完成恢复。');
+  const record = readJson(recPath, null);
+  const sameInstall = record && record.installRoot === install.installRoot && record.commit === info.commit;
   if (!sameInstall) {
     fail(`这个安装没有与当前 commit 匹配的备份，不能跨版本还原。\n  ${install.installRoot}`);
   }
@@ -1262,14 +1267,15 @@ if (flags.undo) {
   if (!result.complete) fail(`回滚未完成：已恢复 ${result.restored} 项，仍有 ${Object.keys(left).length} 项未恢复。记录及原始备份已保留：${recPath}`);
   log.ok(`已还原 ${result.restored} 个文件，${result.alreadyOriginal} 项原本已恢复。原始备份保留供核对。语言包和显示语言没有动。`);
   if (checksums) log.plain('安装校验已按当前文件重新算过。');
+  });
   process.exit(0);
 }
 
 const locale = localeChoice();
 const dict = loadDict(locale.id);
 const runtimeOverrides = loadRuntimeOverrides(locale.id, dict);
-const historyCatalogFile = typeof flags['history-translations'] === 'string' ? path.resolve(flags['history-translations']) : path.join(stateDir(info.dataFolderName), `history-translations.${locale.id}.json`);
-const historyCatalog = readHistoryCatalog(historyCatalogFile);
+const historyCatalogFile = typeof flags['history-translations'] === 'string' ? path.resolve(flags['history-translations']) : null;
+const historyCatalog = historyCatalogFile ? readHistoryCatalog(historyCatalogFile) : {version:1,entries:[]};
 const menuOverrides = Object.fromEntries(MENU_LABELS.filter((key) => typeof dict[key] === 'string').map((key) => [key, dict[key]]));
 const preview = flags.preview === true;
 const plan = [];

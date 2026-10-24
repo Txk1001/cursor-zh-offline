@@ -21,6 +21,15 @@ try{
  if($pkg.scripts.'lint:md' -and !$zip.GetEntry('.markdownlint-cli2.jsonc')){throw '声明了文档检查命令但归档缺少对应规则配置'}
  $lock=Read-Text $zip.GetEntry('package-lock.json')|ConvertFrom-Json -AsHashtable
  if($config.version -ne $pkg.version -or $config.version -ne $lock.version -or $config.version -ne $lock.packages[''].version){throw '版本不一致'}
+ if($pkg.scripts.'test:protection'){
+   foreach($required in @('BUILD-INFO.json','.node-version','.python-version','src/extension/package.nls.json','src/extension/package.nls.zh-cn.json','scripts/lib/installation-lock.mjs')){if(!$zip.GetEntry($required)){throw "新版公共归档缺少 $required"}}
+   $info=Read-Text $zip.GetEntry('BUILD-INFO.json')|ConvertFrom-Json
+   if($info.profile -ne 'public' -or $info.version -ne $config.version -or $info.lockSha256 -ne (Hash-Entry $zip.GetEntry('package-lock.json'))){throw '公共归档构建参数或锁文件记录不一致'}
+   if(!$SourceOnly){
+     $record=Read-Text $zip.GetEntry('dist/build-record.json')|ConvertFrom-Json
+     if($record.profile -ne 'public' -or $record.version -ne $config.version -or $record.lockSha256 -ne $info.lockSha256 -or $record.configSha256 -ne (Hash-Entry $zip.GetEntry('config.json'))){throw '安装包构建记录与归档源码不一致'}
+   }
+ }
  foreach($required in @('README.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md','LICENSE','NOTICE','metadata/community-sources.json','.github/workflows/ci.yml','.github/workflows/release.yml','.gitignore','tests/history-dom.test.mjs','offline/reviewed.zh-cn.json','offline/licenses/manifest.json','scripts/build-maintenance-archive.ps1')){if(!$zip.GetEntry($required)){throw "缺少文件 $required"}}
  if($SourceOnly -and ($names -match '(^|/)(dist|upstream|assets)/|\.(vsix|whl|argosmodel|exe|dll|pyc|zip)$')){throw '源码包包含构建产物、缓存或运行时二进制'}
  $manifest=Read-Text $zip.GetEntry('offline/assets.json')|ConvertFrom-Json
@@ -44,6 +53,7 @@ try{
    $extension=Read-Text $nested.GetEntry('extension/package.json')|ConvertFrom-Json
    if($extension.version -ne $config.version -or $extension.publisher -ne $config.publisher){throw 'VSIX 身份或版本不一致'}
    foreach($item in @('extension/extension.js','extension/offline.cjs','extension/offline/licenses/CTranslate2-4.6.0-LICENSE.txt','extension/offline/licenses/SentencePiece-0.2.1-LICENSE.txt')){if(!$nested.GetEntry($item)){throw 'VSIX 缺少运行文件或许可'}}
+   if($pkg.scripts.'test:protection'){foreach($item in @('extension/package.nls.json','extension/package.nls.zh-cn.json')){if(!$nested.GetEntry($item)){throw 'VSIX 缺少清单中文资源'}}}
  }finally{$nested.Dispose()}
  }
  Write-Output ("归档检查通过：{0} 个文件，{1} 项离线资产，版本 {2}，源码模式 {3}。" -f $names.Count,$assets,$config.version,$SourceOnly.IsPresent)

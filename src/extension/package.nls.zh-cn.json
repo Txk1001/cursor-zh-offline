@@ -1,0 +1,9 @@
+{
+  "languagePack.category": "语言包",
+  "languagePack.selectLanguage": "选择显示语言",
+  "languagePack.openSettings": "打开语言包设置",
+  "languagePack.auto": "沿用编辑器的显示语言，保留已安装的语言包。",
+  "languagePack.chinese": "使用简体中文显示编辑器和 Cursor 界面，保留已安装的语言包。",
+  "languagePack.english": "使用内置英语。语言包仍保留，切回中文无需重新安装。",
+  "languagePack.description": "Cursor 界面的显示语言。更改后仅修改 `argv.json` 的 `locale` 字段，并提示重启。语言包仍保留，可随时切换中英文，无需重新安装。如需彻底移除，请卸载本扩展，再将显示语言设为英语。"
+}
