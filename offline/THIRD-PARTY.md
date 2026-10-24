@@ -1,10 +1,10 @@
 # 离线翻译组件与许可
 
-- Argos Translate 1.11.0：https://github.com/argosopentech/argos-translate ，MIT，Copyright (c) 2020 Argos Open Technologies, LLC。
-- 英译中模型 1.9：来自 Argos 官方模型索引，https://argos-net.com/v1/translate-en_zh-1_9.argosmodel 。原始 OPUS-MT 模型作者为 Jörg Tiedemann 和 Santhosh Thottingal，依据模型包 README，采用 CC BY 4.0：https://creativecommons.org/licenses/by/4.0/ 。模型本体未修改。所用原始模型论文为 “OPUS-MT — Building open translation services for the World”，EAMT 2020，Lisbon, Portugal。
-- CTranslate2：OpenNMT 项目，https://github.com/OpenNMT/CTranslate2 ，MIT。
-- SentencePiece 0.2.1：Google，https://github.com/google/sentencepiece ，Apache-2.0，Copyright 2016 Google Inc.
-- CPython Windows 嵌入式发行包：Python Software Foundation，https://www.python.org/ ，许可随原始运行时保留。
+- Argos Translate 1.11.0：<https://github.com/argosopentech/argos-translate> ，MIT，Copyright (c) 2020 Argos Open Technologies, LLC。
+- 英译中模型 1.9：来自 Argos 官方模型索引，<https://argos-net.com/v1/translate-en_zh-1_9.argosmodel> 。原始 OPUS-MT 模型作者为 Jörg Tiedemann 和 Santhosh Thottingal，依据模型包 README，采用 CC BY 4.0：<https://creativecommons.org/licenses/by/4.0/> 。模型本体未修改。所用原始模型论文为 “OPUS-MT — Building open translation services for the World”，EAMT 2020，Lisbon, Portugal。
+- CTranslate2：OpenNMT 项目，<https://github.com/OpenNMT/CTranslate2> ，MIT。
+- SentencePiece 0.2.1：Google，<https://github.com/google/sentencepiece> ，Apache-2.0，Copyright 2016 Google Inc.
+- CPython Windows 嵌入式发行包：Python Software Foundation，<https://www.python.org/> ，许可随原始运行时保留。
 
 本集成使用 Argos 的模型包读取与分词器模块，通过 CTranslate2 在 CPU 上执行推理；不加载完整的 Stanza、PyTorch、在线 API 或模型自动下载管线。使用 `argostranslate --no-deps` 是这套精简集成的明确选择，不能用它替代需要完整 Argos 翻译管线的环境。
 

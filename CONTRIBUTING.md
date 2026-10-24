@@ -9,6 +9,7 @@
 ```powershell
 npm ci
 npm test
+npm run lint:md
 npm run sync -- --strategy=api
 npm run verify
 npm run package -- --skip-build
@@ -41,10 +42,12 @@ npm run package -- --skip-build
 - 安装或回滚改动应覆盖写入中断、缺少备份、版本不匹配等失败情况。
 - 翻译改动应覆盖变量保护、中文与英文混排、长文本、原文切换。
 - 运行 `npm test`、`npm run check:repo`、`npm run verify`；涉及安装分发时再构建并验证归档。
+- 文档改动运行 `npm run lint:md`。规则检查标题、列表、代码块等结构，中文长行不设硬性列宽；它不判断事实或译文是否正确。
+- 检查范围包括维护中的根文档、`docs/`、PR 模板、离线许可说明与扩展说明；上游归档说明、依赖、构建产物和 `reports/` 不纳入仓库文档门禁。
+- 工作流程为开发分支、PR、必需 CI 与维护者人工确认。只有一位维护者时不虚设独立双人审批，尚未通过的检查不能记作通过。
 - 真实 Cursor 操作、干净用户或远端 CI 没做过就写“未验证”，不能用模拟用例代替。
 - 不提交 `node_modules/`、`dist/`、`offline/assets/`、`upstream/`、`reports/` 或个人状态。
 
 新版本适配须按 [发布流程](docs/publishing.zh-CN.md) 留下记录，不能只增加准入版本号。默认仅发布简体中文；新增语言需独立校对、测试和验收。
 
 贡献按项目 MIT 许可提供，保留已有作者版权；引用外部内容时记录来源、许可、原始版本和必要署名。
-

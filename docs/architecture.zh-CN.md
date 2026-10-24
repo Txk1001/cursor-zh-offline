@@ -29,4 +29,3 @@ Windows 嵌入式 Python 运行时载入 Argos en→zh 模型、SentencePiece �
 ## 分发
 
 源码仓库不含 Cursor 原始程序、用户数据、运行时资产或本机提取元数据，公共来源记录除外。源码 ZIP 可独立构建；完整离线 ZIP 添加已验证的 VSIX、模型与依赖。所有内容经文件清单校验。参阅 [发布流程](publishing.zh-CN.md)。
-

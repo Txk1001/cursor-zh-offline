@@ -17,6 +17,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run check:repo
+      - name: 检查 Markdown 文档
+        run: npm run lint:md
       - run: npm run sync -- --strategy=api
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,6 +1,6 @@
 # Agent notes · cursor-zh-offline
 
-This is an independent integration derived from the projects credited in LICENSE and NOTICE. The upstream marketplace identity is reference material only. Its public source repository is https://github.com/Txk1001/cursor-zh-offline. Marketplace publication remains disabled.
+This is an independent integration derived from the projects credited in LICENSE and NOTICE. The upstream marketplace identity is reference material only. Its public source repository is <https://github.com/Txk1001/cursor-zh-offline>. Marketplace publication remains disabled.
 
 ## Scope and source of truth
 
@@ -31,4 +31,3 @@ Do not push, tag, create a public repository or publish extensions without the u
 Extract new local metadata, inspect resource and key changes, update translations and stable anchors, exercise failure recovery and check real UI. Only after acceptance should a new runtime version be admitted. Keep rollback scoped to the installation and commit. Update the compatibility table and validation evidence.
 
 Use concise Chinese commit descriptions explaining the behavior changed and why.
-

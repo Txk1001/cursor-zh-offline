@@ -104,5 +104,4 @@ pwsh -File scripts/build-public-archive.ps1 -WithOffline -OutputPath "release/cu
 
 问题反馈请使用[本项目 Issues](https://github.com/Txk1001/cursor-zh-offline/issues)，提交前按模板移除账号、令牌、私人对话和用户路径。上游来源与许可见 NOTICE；本项目的问题由本仓库跟踪。
 
-
 其他系统的适配步骤见[扩大系统覆盖范围](docs/CROSS-PLATFORM.md)。
