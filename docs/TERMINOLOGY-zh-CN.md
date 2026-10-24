@@ -6,6 +6,7 @@
 | Subagent | 子智能体 | 保留命令 `/create-subagent` |
 | Chat / Conversation | 对话 | 历史、列表与操作使用同一译名 |
 | Repository | 仓库 | 项目与仓库按原义区分 |
+| No Repo | 无仓库 | 空仓库状态，界面与离线精校词典统一 |
 | Workspace | 工作区 | 不翻译实际目录名 |
 | Fork chat | 从此处分支对话 | 保留原对话 |
 | Prompt | 提示词 | 输入框内的用户内容不由界面补丁改写 |
