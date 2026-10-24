@@ -7,7 +7,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+    # Keep existing required check names; pin Linux while CPython 3.12.10 has no Ubuntu 26 build.
+    runs-on: ${{ matrix.os == 'ubuntu-latest' && 'ubuntu-24.04' || 'windows-latest' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
