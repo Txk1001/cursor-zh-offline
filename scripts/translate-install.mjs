@@ -25,6 +25,7 @@ import { p, readJson, writeJson, log, fail, parseArgs, loadConfig } from './lib/
 import { findCursorInstalls, readCursorInfo, extensionsDir, argvJsonPath, cursorAppRoot } from './lib/cursor-paths.mjs';
 import { readHistoryCatalog, historyBootstrap, translateHistoryStatus } from './lib/history-localization.mjs';
 import {withInstallationLock} from './lib/installation-lock.mjs';
+import {injectSettingsLabels} from './lib/settings-labels.mjs';
 import { restoreTrackedFiles, finalizeInstallation, activeExtensionNames, findVersionedVsix } from './lib/install-state.mjs';
 import { offlineMainBootstrap } from './lib/offline-host.mjs';
 import { applyFileTransaction, recoverFileTransaction, writeFileAtomic } from './lib/file-transaction.mjs';
@@ -831,7 +832,7 @@ export function injectRuntimeOverrides(source, overrides, menuOverrides = {}, hi
   const inMenu=e=>Boolean(e?.closest(menuSelector));
   globalThis.__cursorZhCnTranslateUiText=s=>typeof s==="string"&&has(s)?m[s]:s;
   const excluded='script,style,pre,code,textarea,input,[contenteditable]:not([contenteditable="false"]),.view-lines,.explorer-folders-view,.search-view .results,.xterm-rows,.monaco-breadcrumbs,.ui-code-block-content,[data-ui-code-block-diff],.rendered-markdown,.markdown-body,.markdown-rendered,[data-streamdown],.composer-human-message,.composer-user-message,[data-message-role],[data-role="user"],[data-role="assistant"]';
-  const controlOnly=new Set(["Default","Queue","Settings","Small","Large","Dismiss","Browse Marketplace","Open"]);
+  const controlOnly=new Set(["Default","Queue","Settings","Small","Large","Dismiss","Browse Marketplace","Open","Add","User","Workspace","Workspaces","Sources","Agent"]);
   const controls='button,[role="button"],[role="combobox"],[role="option"],[role="menuitem"],[role="switch"],[role="tab"]';
   const blocked=n=>{const e=n.nodeType===1?n:n.parentElement;return Boolean(e?.closest(excluded+",.composer-assistant-message"))};
   const apply=n=>{
@@ -1274,6 +1275,8 @@ if (flags.undo) {
 const locale = localeChoice();
 const dict = loadDict(locale.id);
 const runtimeOverrides = loadRuntimeOverrides(locale.id, dict);
+const settingsLabelsFile = p('src', 'i18n', locale.id, 'settings-labels.json');
+const settingsLabels = fs.existsSync(settingsLabelsFile) ? readJson(settingsLabelsFile) : {};
 const historyCatalogFile = typeof flags['history-translations'] === 'string' ? path.resolve(flags['history-translations']) : null;
 const historyCatalog = historyCatalogFile ? readHistoryCatalog(historyCatalogFile) : {version:1,entries:[]};
 const menuOverrides = Object.fromEntries(MENU_LABELS.filter((key) => typeof dict[key] === 'string').map((key) => [key, dict[key]]));
@@ -1309,8 +1312,10 @@ for (const rel of bundlePaths(install.appRoot)) {
     ? {text:source.toString('utf8'),count:0,hits:new Map()}
     : rewrite(source.toString('utf8'), dict);
   for (const key of hits.keys()) seen.add(key);
+  const settingsText = /^out\/vs\/workbench\/workbench\.(?:desktop|glass)\.main\.js$/.test(rel)
+    ? injectSettingsLabels(staticText, settingsLabels) : staticText;
   const text = /^(?:out\/vs\/workbench\/workbench\.(?:desktop|glass)\.main\.js|molten\/dist\/renderer\/assets\/boot-[\w-]+\.js)$/.test(rel)
-    ? injectRuntimeOverrides(staticText, runtimeOverrides, menuOverrides, historyCatalog)
+    ? injectRuntimeOverrides(settingsText, runtimeOverrides, menuOverrides, historyCatalog)
     : rel === 'out/main.js' ? staticText + offlineMainBootstrap(info.dataFolderName) : staticText;
   if (text === before.toString('utf8')) continue;
   total += count;

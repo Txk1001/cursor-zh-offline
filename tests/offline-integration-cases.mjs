@@ -42,7 +42,8 @@ export async function checkProtectionAndTerms(translate) {
     ['Simplified Chinese language pack',['简体中文语言包']],
     ['Install the Simplified Chinese language packs before restarting.',['简体中文语言包']],
     ['The display language controls the user interface.',['显示语言','用户界面']],
-    ['Use the context menu to open conversation history.',['右键菜单','会话历史']],
+    ['Use the context menu to open conversation history.',['右键菜单','对话历史']],
+    ['A shared conversation title appears in chat history.',['对话标题','对话历史']],
     ['The API keys are stored in environment variables.',['API 密钥','环境变量']],
   ];
   const termTranslations=await translate(terminologyCases.map(item=>item[0]));
