@@ -62,4 +62,3 @@ pwsh -File scripts/verify-archive.ps1 -RequireOffline -ArchivePath "release/curs
 `verifiedCursorVersions` 只记录标准语言键核对，`runtimeVerifiedCursorVersions` 控制完整补丁准入。完成适配与实机记录后才允许增加后者。升级版本时同步 config、package、lockfile 根版本、变更记录和兼容性表。
 
 个人翻译缓存、连接文件、聊天数据和原始 Cursor 资源不进入版本库或发布包。依赖或模型升级必须同时更新下载地址、SHA-256、许可与隔离安装验证。
-

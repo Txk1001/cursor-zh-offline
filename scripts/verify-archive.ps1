@@ -18,6 +18,7 @@ try{
  foreach($line in $lines){if($line -notmatch '^([a-f0-9]{64})  (.+)$'){throw '无效的校验清单'};$entryName=$Matches[2];$expected=$Matches[1];if($entryName -eq 'MANIFEST.sha256' -or !$manifestNames.Add($entryName)){throw '文件校验清单重复或包含自身'};$entry=$zip.GetEntry($entryName);if(!$entry -or (Hash-Entry $entry) -ne $expected){throw '文件哈希不匹配'}}
  $config=Read-Text $zip.GetEntry('config.json')|ConvertFrom-Json
  $pkg=Read-Text $zip.GetEntry('package.json')|ConvertFrom-Json
+ if($pkg.scripts.'lint:md' -and !$zip.GetEntry('.markdownlint-cli2.jsonc')){throw '声明了文档检查命令但归档缺少对应规则配置'}
  $lock=Read-Text $zip.GetEntry('package-lock.json')|ConvertFrom-Json -AsHashtable
  if($config.version -ne $pkg.version -or $config.version -ne $lock.version -or $config.version -ne $lock.packages[''].version){throw '版本不一致'}
  foreach($required in @('README.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md','LICENSE','NOTICE','metadata/community-sources.json','.github/workflows/ci.yml','.github/workflows/release.yml','.gitignore','tests/history-dom.test.mjs','offline/reviewed.zh-cn.json','offline/licenses/manifest.json','scripts/build-maintenance-archive.ps1')){if(!$zip.GetEntry($required)){throw "缺少文件 $required"}}

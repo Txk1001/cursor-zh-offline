@@ -1,0 +1,20 @@
+{
+  "config": {
+    "MD013": false
+  },
+  "globs": [
+    "*.md",
+    "docs/**/*.md",
+    ".github/**/*.md",
+    "offline/*.md",
+    "src/marketplace/*.md"
+  ],
+  "ignores": [
+    "README-upstream.md",
+    "node_modules/**",
+    "upstream/**",
+    "dist/**",
+    "reports/**",
+    "release/**"
+  ]
+}
