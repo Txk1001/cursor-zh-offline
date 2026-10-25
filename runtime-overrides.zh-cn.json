@@ -119,5 +119,8 @@
   "Workspaces": "工作区",
   "Sources": "来源",
   "Agent": "智能体",
-  "New Agent": "新建智能体"
+  "New Agent": "新建智能体",
+  "Run": "运行",
+  "Always Run": "始终允许运行",
+  "Always run": "始终允许运行"
 }

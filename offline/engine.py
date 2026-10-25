@@ -21,10 +21,12 @@ import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-VERSION = "argos-en-zh-1.9-bridge-3"
+VERSION = "argos-en-zh-1.9-bridge-4"
 TRUSTED_ORIGINS = {"vscode-file://vscode-app", "file://", "null"}
 MAX_TEXT = 12000
-TECH_TERMS = ["Cursor", "VS Code", "Visual Studio Code", "GitHub", "GitLab", "Glass", "MCP", "API", "SDK", "JSON", "YAML", "HTML", "CSS", "JavaScript", "TypeScript", "Python", "Node.js", "React", "Electron", "SQL", "HTTP", "HTTPS", "SSH", "Docker", "Claude", "Composer", "Grok", "GPT", "Gemini"]
+TECH_TERMS = json.loads(Path(__file__).with_name('protected-terms.json').read_text(encoding='utf-8-sig'))
+if not isinstance(TECH_TERMS, list) or any(not isinstance(term, str) or not term for term in TECH_TERMS):
+    raise ValueError('Invalid protected terminology file')
 # A command mentioned in prose is still executable content. Stop at common
 # prose boundaries; quoted arguments and command chains remain intact.
 COMMAND_TOOL = r"(?:npm|npx|pnpm|yarn|bun|pip3?|python3?|node|cargo|rustc|go|git|docker|kubectl|curl|wget|pwsh|powershell|dotnet|make|cmake|apt(?:-get)?|brew|winget|uv|poetry|conda|pytest|rg)"
@@ -41,6 +43,7 @@ PROTECTED = re.compile(
     r"|\{[A-Za-z_\d][\w.\[\]]*(?:![rsa])?(?::[^{}\n]+)?\}"
     r"|</?[A-Za-z][^>\n]*>"
     r"|https?://[^\s<>]+|[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}"
+    r"|[\u21b5\u23ce\u2318\u2325\u21e7\u2303\u21e5\ue000-\uf8ff]"
     r"|(?:[A-Za-z]:[\\/]|\\\\[^\\\s]+\\|~/|(?<![\w:/])/(?!/)|\.{1,2}/)[^\s<>\"']+"
     r"|\b(?:Ctrl|Control|Alt|Shift|Cmd|Command|Meta|Super)(?:\+(?:[A-Za-z0-9]+|[+]))+"
     r"|(?i:" + COMMAND + r")"
@@ -134,7 +137,7 @@ class Engine:
         self.db.commit()
         (state/"translations.sqlite3").chmod(0o600)
         # Pin the cache revision to protection rules as well as the model.
-        self.revision = VERSION + hashlib.sha256(Path(__file__).read_bytes()+json.dumps([self.glossary,self.reviewed],sort_keys=True).encode()).hexdigest()[:12]
+        self.revision = VERSION + hashlib.sha256(Path(__file__).read_bytes()+json.dumps([self.glossary,self.reviewed,TECH_TERMS],sort_keys=True).encode()).hexdigest()[:12]
         forbid_outbound()
 
     def plain(self, text: str) -> str:
@@ -171,6 +174,9 @@ class Engine:
         spans=protected_spans(text,self.glossary)
         approved=self.reviewed.get(clean.casefold())
         if approved and spans_preserved(approved,spans):return leading+approved+trailing
+        # Existing Chinese prose is already localized. Do not retranslate its
+        # embedded product names or reconstruct its punctuation with the model.
+        if any(re.match(r'[\u3400-\u9fff\uf900-\ufaff]',match.group()) for match in PROTECTED.finditer(text)):return text
         duration=re.fullmatch(r'The operation completed in (\d+(?:[.,]\d+)?) seconds?\.',clean,re.I)
         if duration:return leading+'操作已完成，用时 '+duration[1]+' 秒。'+trailing
         keep_code=re.fullmatch(r'(Please )?keep (`[^`\n]+`) unchanged\.',clean,re.I)

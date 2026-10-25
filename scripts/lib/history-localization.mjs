@@ -37,7 +37,14 @@ export function translateHistoryStatus(value) {
 
 // This function is serialized into Cursor. It only changes visible text nodes.
 // Catalogs stay in each user's private state directory and are never packaged.
-export function installHistoryOverlay(statusFormatter, offlineFactory) {
+export function normalizeHistoryControlOptions(options = {}) {
+  const mode=options.mode ?? 'compact',position=options.position ?? 'top-right';
+  if(!['compact','expanded'].includes(mode))throw Error('翻译控件模式必须为 compact 或 expanded');
+  if(!['top-right','top-left','bottom-right','bottom-left'].includes(position))throw Error('翻译控件位置无效');
+  return {mode,position};
+}
+
+export function installHistoryOverlay(statusFormatter, offlineFactory, technicalTerms = [], uiOptions = {}) {
   globalThis.__cursorZhCnHistoryStatus = statusFormatter;
   if (typeof document === 'undefined' || globalThis.__cursorZhHistoryOverlay) return;
   globalThis.__cursorZhHistoryOverlay = true;
@@ -51,7 +58,7 @@ export function installHistoryOverlay(statusFormatter, offlineFactory) {
     dictionary = next;
   };
   try { const saved = localStorage.getItem(storageKey); if(saved) acceptCatalog(JSON.parse(saved)); } catch {}
-  const protectedSelector = 'script,style,pre,code,a,img,input,textarea,[contenteditable]:not([contenteditable="false"]),.view-lines,.xterm-rows,.explorer-folders-view,.search-view';
+  const protectedSelector = 'script,style,pre,code,kbd,svg,a,img,input,textarea,[contenteditable]:not([contenteditable="false"]),[data-tool-approval-gate],.view-lines,.xterm-rows,.explorer-folders-view,.search-view';
   const paragraphSelector = 'p,li,blockquote,h1,h2,h3,h4,h5,h6,span,div,button';
   const changes = new Map();
   const owners = new WeakMap(), dirtyRoots = new Set(), candidates = new Set(), waiting = new Map(), timers = new Map();
@@ -59,6 +66,51 @@ export function installHistoryOverlay(statusFormatter, offlineFactory) {
   const MAX_WAITING_SOURCES=128, MAX_WAITING_ELEMENTS=512, MAX_WAITING_CHARS=2000000;
   let historyCount = 0, wasEnabled = false, queuedCount = 0;
   let showChinese = true, badge, issueBadge, historyHost, scheduled = false, disposed = false;
+  let disposeControls=()=>{},repositionControls=()=>{};
+  function mountControls(host,shadow){
+    const positions=['top-right','top-left','bottom-right','bottom-left'];
+    const initial={mode:uiOptions.mode==='expanded'?'expanded':'compact',position:positions.includes(uiOptions.position)?uiOptions.position:'top-right'};
+    const defaultsKey=initial.mode+'|'+initial.position,preferenceKey='cursor.zh.history.controls.v1';
+    let preference;try{preference=JSON.parse(localStorage.getItem(preferenceKey)||'null')}catch{}
+    const saved=preference?.defaultsKey===defaultsKey?preference:null;
+    let position=positions.includes(saved?.position)?saved.position:initial.position;
+    let point=Number.isFinite(saved?.point?.x)&&Number.isFinite(saved?.point?.y)?saved.point:null;
+    let expanded=(saved?.mode||initial.mode)==='expanded';
+    host.style.cssText='position:fixed;z-index:2147483000;display:flex;flex-direction:column;align-items:flex-end;gap:6px;max-width:calc(100vw - 16px);';
+    const handle=document.createElement('div');handle.style.cssText='display:flex;gap:3px;align-items:center;';
+    const grip=document.createElement('button');grip.textContent='↕';grip.setAttribute('aria-label','拖动翻译控件');grip.title='拖动这里调整位置';grip.style.cssText='touch-action:none;cursor:move;font:12px system-ui;padding:4px 5px;color:#ddd;background:#252525;border:1px solid #555;border-radius:12px';
+    const launcher=document.createElement('button');launcher.dataset.historyControlsToggle='true';launcher.style.cssText='font:12px system-ui;padding:4px 8px;color:#ddd;background:#252525;border:1px solid #555;border-radius:12px';
+    const panel=document.createElement('div');panel.dataset.historyControlsPanel='true';panel.style.cssText='flex-wrap:wrap;align-items:center;gap:6px;padding:8px;max-width:min(480px,calc(100vw - 32px));max-height:65vh;overflow:auto;background:#252525;border:1px solid #555;border-radius:12px;box-shadow:0 4px 18px #0006';
+    const selection=document.createElement('select');selection.setAttribute('aria-label','翻译控件位置');
+    for(const [value,label] of [['top-right','右上'],['top-left','左上'],['bottom-right','右下'],['bottom-left','左下']]){const option=document.createElement('option');option.value=value;option.textContent=label;selection.append(option)}
+    const reset=document.createElement('button');reset.textContent='恢复预设位置';reset.title='恢复本次安装设置的位置并清除拖动坐标';
+    const applyPosition=()=>{
+      host.style.left=host.style.right=host.style.top=host.style.bottom='';
+      host.style.flexDirection=position.startsWith('bottom')?'column-reverse':'column';
+      host.style.alignItems=position.endsWith('left')?'flex-start':'flex-end';
+      if(point){const r=host.getBoundingClientRect();host.style.left=Math.max(8,Math.min(point.x,innerWidth-Math.max(64,r.width)-8))+'px';host.style.top=Math.max(8,Math.min(point.y,innerHeight-Math.max(28,r.height)-30))+'px'}
+      else{host.style[position.endsWith('left')?'left':'right']='16px';host.style[position.startsWith('bottom')?'bottom':'top']=position.startsWith('bottom')?'48px':'80px'}
+      selection.value=position;
+    };
+    const save=()=>{try{localStorage.setItem(preferenceKey,JSON.stringify({defaultsKey,mode:expanded?'expanded':'compact',position,point}))}catch{}};
+    const show=value=>{expanded=value;panel.hidden=!value;panel.style.display=value?'flex':'none';launcher.textContent=value?'收起译文工具':'译文';launcher.setAttribute('aria-expanded',String(value));applyPosition();save()};
+    launcher.onclick=()=>show(!expanded);
+    selection.onchange=()=>{position=selection.value;point=null;applyPosition();save()};
+    reset.onclick=()=>{position=initial.position;point=null;show(initial.mode==='expanded')};
+    let dragging=null;
+    grip.onpointerdown=event=>{if(event.button!==0)return;const r=host.getBoundingClientRect();dragging={id:event.pointerId,x:event.clientX,y:event.clientY,left:r.left,top:r.top};grip.setPointerCapture?.(event.pointerId);event.preventDefault()};
+    grip.onpointermove=event=>{if(!dragging||event.pointerId!==dragging.id)return;point={x:dragging.left+event.clientX-dragging.x,y:dragging.top+event.clientY-dragging.y};applyPosition()};
+    grip.onpointerup=event=>{if(!dragging||event.pointerId!==dragging.id)return;dragging=null;grip.releasePointerCapture?.(event.pointerId);save()};
+    grip.onpointercancel=()=>{dragging=null;save()};
+    const outside=event=>{if(expanded&&!event.composedPath().includes(host))show(false)};
+    const escape=event=>{if(expanded&&event.key==='Escape')show(false)};
+    document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape);window.addEventListener('resize',applyPosition);
+    const sizeObserver=typeof ResizeObserver==='function'?new ResizeObserver(applyPosition):null;sizeObserver?.observe(host);
+    repositionControls=applyPosition;
+    disposeControls=()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape);window.removeEventListener('resize',applyPosition);sizeObserver?.disconnect()};
+    handle.append(grip,launcher);panel.append(selection,reset);shadow.append(handle,panel);show(expanded);
+    return panel;
+  }
   const scheduleRefresh=()=>{if(!disposed&&!scheduled){scheduled=true;requestAnimationFrame(refresh)}};
   const offline=offlineFactory(reason => {
     const active = offline.enabled?.() === true;
@@ -82,7 +134,14 @@ export function installHistoryOverlay(statusFormatter, offlineFactory) {
   });
   const settled=new WeakMap();
   const transcriptSelector='[aria-label="对话记录"],[aria-label="Conversation transcript"],[aria-label="Chat transcript"],.composer-assistant-message,.composer-human-message';
-  const looksEnglish=source=>/[A-Za-z]{2}/.test(source)&&!/^[\s\d\p{P}]*$/u.test(source)&&!/^https?:\/\/\S+$/.test(source)&&!/^\S+\.(?:js|ts|tsx|jsx|py|json|md|txt|c|cpp|cs|html|css|yml|yaml)$/i.test(source);
+  const technicalPattern=technicalTerms.length?new RegExp('(?<![A-Za-z0-9_])(?:'+technicalTerms.map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).sort((a,b)=>b.length-a.length).join('|')+')(?![A-Za-z0-9_])','gi'):null;
+  const looksEnglish=source=>/[A-Za-z]{2}/.test(technicalPattern?source.replace(technicalPattern,' '):source)&&!/^[\s\d\p{P}]*$/u.test(source)&&!/^https?:\/\/\S+$/.test(source)&&!/^\S+\.(?:js|ts|tsx|jsx|py|json|md|txt|c|cpp|cs|html|css|yml|yaml)$/i.test(source);
+  const existingChinese=(element,context=true)=>{
+    const block=(context&&element.closest('p,li,blockquote,h1,h2,h3,h4,h5,h6,td,th'))||element;
+    const walker=document.createTreeWalker(block,NodeFilter.SHOW_TEXT);
+    while(walker.nextNode())if(!walker.currentNode.parentElement?.closest('script,style,pre,code,kbd,svg')&&/[\u3400-\u9fff\uf900-\ufaff]/.test(walker.currentNode.nodeValue))return true;
+    return false;
+  };
   // Reject layout containers before querying descendants or reading their text.
   // Individual paragraphs and inline groups are the largest translation units.
   const textUnit=element=>element.matches(paragraphSelector)&&[...element.children].every(child=>/^(STRONG|B|EM|I|SPAN|SMALL|BR|SVG)$/.test(child.tagName));
@@ -92,6 +151,8 @@ export function installHistoryOverlay(statusFormatter, offlineFactory) {
     const inSidebar=element.closest('#glass-sidebar li,#glass-sidebar [role="listitem"],#glass-sidebar [role="tab"]');
     const inTranscript=element.closest(transcriptSelector);
     if(!inDialog&&!inSidebar&&!inTranscript)return false;
+    if(!inSidebar&&element.closest('button,[role="button"],[role="menuitem"],[role="tab"],[role="option"]'))return false;
+    if(existingChinese(element,!inSidebar)){forgetWaiting(element);return false;}
     const previous=settled.get(element);
     if(!previous||previous.source!==source){
       settled.set(element,{source,at:Date.now()});clearTimeout(timers.get(element));
@@ -173,6 +234,7 @@ export function installHistoryOverlay(statusFormatter, offlineFactory) {
     }
     if (rich && start < nodes.length) values[start] = rest;
     else if (rich && rest) rich = false;
+    if (!rich && protectedIndexes.length) { markIssue(element,'译文无法保留原有强调格式，已保留原文'); return; }
     if (!rich) { values.fill(''); values[0] = translated; }
     setRecord(element, nodes, values, Boolean(historical||auto));
   }
@@ -191,7 +253,9 @@ export function installHistoryOverlay(statusFormatter, offlineFactory) {
     const paragraph=parent.closest('p,li,blockquote');
     if(!paragraph?.querySelector('a,code')||!looksEnglish(node.nodeValue)||owners.has(node))return;
     const source=node.nodeValue;
-    const translated=dictionary.get(normalize(source))||(offline.enabled?.()?automatic(source,node):null);
+    const manual=dictionary.get(normalize(source));
+    if(!manual&&existingChinese(paragraph)){forgetWaiting(node);return;}
+    const translated=manual||(offline.enabled?.()?automatic(source,node):null);
     if(translated&&translated!==source)setRecord(node,[node],[translated],true);
   }
   function refresh() {
@@ -217,12 +281,14 @@ export function installHistoryOverlay(statusFormatter, offlineFactory) {
     }
     for(const node of textNodes){if(!owners.has(node)){translateStatus(node);translateMixedText(node)}}
     if (!badge?.isConnected) {
+      disposeControls();
       const host = document.createElement('div');
       historyHost = host;
-      host.style.cssText = 'position:fixed;right:16px;bottom:14px;z-index:2147483000;';
       host.dataset.cursorHistoryLanguage = 'true';
       const shadow = host.attachShadow({mode:'closed'});
+      const panel=mountControls(host,shadow);
       badge = document.createElement('button');
+      badge.dataset.historyOriginalToggle='true';
       badge.style.cssText = 'font:12px system-ui;padding:7px 12px;color:#ddd;background:#252525;border:1px solid #555;border-radius:16px;cursor:pointer;';
       const loadFile = () => {
         const input = document.createElement('input'); input.type = 'file'; input.accept = '.json,application/json';
@@ -257,13 +323,15 @@ export function installHistoryOverlay(statusFormatter, offlineFactory) {
       badge.title='自动译文未经人工校对；可随时查看原文或导入人工译文';
       const load = document.createElement('button'); load.textContent = '导入译文'; load.style.cssText = badge.style.cssText + 'margin-left:6px'; load.onclick = loadFile;
       issueBadge=document.createElement('span');issueBadge.style.cssText='font:12px system-ui;color:#efc172;margin-left:8px';issueBadge.setAttribute('role','status');
-      shadow.append(badge,load);offline.attach(shadow,badge.style.cssText);shadow.append(issueBadge); (document.body || document.documentElement).append(host);
+      panel.append(badge,load);offline.attach(panel,badge.style.cssText);panel.append(issueBadge); (document.body || document.documentElement).append(host);
     }
+    historyHost.style.display=document.querySelector(transcriptSelector+',#glass-sidebar li,#glass-sidebar [role="listitem"],#glass-sidebar [role="tab"]')?'flex':'none';
     if(historyCount)badge.textContent=showChinese?'历史译文 · 查看原文':'历史原文 · 查看中文';
     for(const element of issues.keys())if(!element.isConnected)forgetWaiting(element);
     issueBadge.textContent=issues.size?`${issues.size} 处保留原文`:'';
     if(queuedCount)issueBadge.textContent+=(issues.size?'；':'')+'部分内容排队中';
     issueBadge.title=[...new Set(issues.values())].join('；');
+    repositionControls();
   }
   function queueContext(node){
     if(node.nodeType===3)candidates.add(node);
@@ -304,15 +372,16 @@ export function installHistoryOverlay(statusFormatter, offlineFactory) {
     // not itself removed. Release those requests and stabilization timers too.
     for(const [source,elements] of waiting)for(const element of elements)if(!element.isConnected)forgetWaiting(element);
     for(const element of timers.keys())if(!element.isConnected){clearTimeout(timers.get(element));timers.delete(element)}
-    if(candidates.size||dirtyRoots.size||!badge?.isConnected)scheduleRefresh();
+    if(candidates.size||dirtyRoots.size||!badge?.isConnected||records.some(record=>record.removedNodes.length))scheduleRefresh();
   });
   observer.observe(document,{childList:true,subtree:true,characterData:true});
-  window.addEventListener('pagehide',()=>{disposed=true;observer.disconnect();offline.dispose();for(const timer of timers.values())clearTimeout(timer);timers.clear();waiting.clear();issues.clear();changes.clear()},{once:true});
+  window.addEventListener('pagehide',()=>{disposed=true;observer.disconnect();disposeControls();offline.dispose();for(const timer of timers.values())clearTimeout(timer);timers.clear();waiting.clear();issues.clear();changes.clear()},{once:true});
   const initial=()=>{dirtyRoots.add(document.body || document.documentElement);refresh()};
   if (document.body) initial(); else document.addEventListener('DOMContentLoaded',initial,{once:true});
 }
 
-export function historyBootstrap() {
+export function historyBootstrap(_ignoredCatalog, options = {}) {
   // No personal text, username or filesystem path enters shared app resources.
-  return `\n;(${installHistoryOverlay.toString()})(${translateHistoryStatus.toString()},${createOfflineClient.toString()});\n`;
+  const terms=JSON.parse(fs.readFileSync(new URL('../../offline/protected-terms.json',import.meta.url),'utf8'));
+  return `\n;(${installHistoryOverlay.toString()})(${translateHistoryStatus.toString()},${createOfflineClient.toString()},${JSON.stringify(terms)},${JSON.stringify(normalizeHistoryControlOptions(options))});\n`;
 }

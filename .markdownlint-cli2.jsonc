@@ -5,6 +5,7 @@
   "globs": [
     "*.md",
     "docs/**/*.md",
+    "templates/**/*.md",
     ".github/**/*.md",
     "offline/*.md",
     "src/marketplace/*.md"

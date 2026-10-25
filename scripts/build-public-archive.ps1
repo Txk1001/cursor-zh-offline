@@ -15,7 +15,7 @@ $entries['.markdownlint-cli2.jsonc'] = '.markdownlint-cli2.jsonc'
 $entries['.node-version'] = '.node-version'
 $entries['.python-version'] = '.python-version'
 foreach ($name in @('AGENTS.md','README.md','README-通用安装.md','README-upstream.md','CONTRIBUTING.md','CODE_OF_CONDUCT.md','ROADMAP.md','SECURITY.md','LICENSE','NOTICE','CHANGELOG.md','.gitignore','.gitattributes','config.json','package.json','package-lock.json','local-overrides.zh-cn.json','runtime-overrides.zh-cn.json','安装汉化.cmd','安装离线汉化.cmd','install.sh','metadata/community-sources.json')) { $entries[$name] = $name }
-foreach ($name in @('THIRD-PARTY.md','engine.py','install-assets.py','assets.json','terms.default.json','reviewed.zh-cn.json')) { $entries['offline/'+$name] = 'offline/'+$name }
+foreach ($name in @('THIRD-PARTY.md','engine.py','install-assets.py','assets.json','terms.default.json','protected-terms.json','reviewed.zh-cn.json')) { $entries['offline/'+$name] = 'offline/'+$name }
 $folders = @('.github','scripts','src','docs','media','templates','tests','offline/licenses')
 if (!$SourceOnly) {
     $buildRecord = Get-Content -LiteralPath (Join-Path $sourceRoot 'dist/build-record.json') -Raw | ConvertFrom-Json

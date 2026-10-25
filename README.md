@@ -42,6 +42,10 @@ node scripts/portable-install.mjs --dir="D:\Apps\Cursor" --with-offline
 
 目录应包含 `resources/app`。安装器在修改前检查版本、运行进程、原始资源与备份；权限不足会报错。更多用法见 [安装与回滚](README-通用安装.md)。
 
+1.1.2 候选源码的历史控件默认收成“译文”小按钮；可拖动、选择四角位置，点击外部或按 `Escape` 收起面板。安装预设支持 `--history-controls=compact|expanded` 与 `--history-position=top-right|top-left|bottom-right|bottom-left`，当前用户的布局偏好在本机保留。操作方法见 [手动配置与 Agent 自动配置](docs/AGENT-SETUP.zh-CN.md)，可复制 [Agent 配置任务模板](templates/agent-setup.zh-CN.md)。这些布局选项尚未发布到 1.1.1。
+
+需要建立验收环境时，按 [Windows 与 Mac 测试环境说明](docs/TEST-ENVIRONMENTS.zh-CN.md) 配置。Mac 当前仅评估标准语言包，完整补丁与离线正文翻译仍未开放。
+
 ## 历史会话与隐私
 
 - 已加载的会话标题、正文和支持的界面状态可显示中文；原始数据库不变，通过“查看原文”切回。
@@ -49,6 +53,7 @@ node scripts/portable-install.mjs --dir="D:\Apps\Cursor" --with-offline
 - 翻译服务仅监听 `127.0.0.1`，要求本机访问令牌。连接文件含令牌，不应共享。
 - 翻译缓存保存在当前用户状态目录的 `offline/translations.sqlite3`，包含待译原文与译文，属于个人数据。
 - 自动译文由模型生成，不能视为人工精校。可用 [示例词典](templates/history-translations.example.json) 导入人工修订，覆盖模型结果。
+- 保留 Cursor 和语言包已有的准确中文；自动翻译默认跳过含中文的正文与标题，避免重复翻译。公共产品名保护表为 `offline/protected-terms.json`，`Copilot`、`Playwright`、`Context7` 等保留原名；通用界面概念仍采用规范中文，规则见 [术语表](docs/TERMINOLOGY-zh-CN.md)。
 - 公共术语在 `offline/terms.default.json`，个人覆盖在状态目录的 `terms.user.json`。代码块、变量、路径等受保护；仍应核对原文后使用译文中的技术指令。
 
 默认状态目录为 `~/.cursor/cursor-language-pack`；便携或派生安装以安装器提示为准。连接文件、个人词典、缓存、安装备份均不进入公共源码或安装包。

@@ -60,6 +60,7 @@ fs.copyFileSync(p('offline','engine.py'),path.join(state,'engine.py'));
 fs.copyFileSync(p('src','extension','offline.cjs'),path.join(state,'service.cjs'));
 fs.copyFileSync(p('offline','THIRD-PARTY.md'),path.join(state,'THIRD-PARTY.md'));
 fs.copyFileSync(p('offline','terms.default.json'),path.join(state,'terms.default.json'));
+fs.copyFileSync(p('offline','protected-terms.json'),path.join(state,'protected-terms.json'));
 fs.copyFileSync(p('offline','reviewed.zh-cn.json'),path.join(state,'reviewed.zh-cn.json'));
 fs.cpSync(p('offline','licenses'),path.join(state,'licenses'),{recursive:true});
 writeJson(configPath,{version:1,enabled:true,python:path.relative(state,python),revision,engine:'argos-en-zh-1.9'});

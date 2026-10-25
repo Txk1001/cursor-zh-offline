@@ -30,7 +30,7 @@ try{
      if($record.profile -ne 'public' -or $record.version -ne $config.version -or $record.lockSha256 -ne $info.lockSha256 -or $record.configSha256 -ne (Hash-Entry $zip.GetEntry('config.json'))){throw '安装包构建记录与归档源码不一致'}
    }
  }
- foreach($required in @('README.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md','LICENSE','NOTICE','metadata/community-sources.json','.github/workflows/ci.yml','.github/workflows/release.yml','.gitignore','tests/history-dom.test.mjs','offline/reviewed.zh-cn.json','offline/licenses/manifest.json','scripts/build-maintenance-archive.ps1')){if(!$zip.GetEntry($required)){throw "缺少文件 $required"}}
+ foreach($required in @('README.md','CHANGELOG.md','CONTRIBUTING.md','SECURITY.md','LICENSE','NOTICE','metadata/community-sources.json','.github/workflows/ci.yml','.github/workflows/release.yml','.gitignore','tests/history-dom.test.mjs','offline/reviewed.zh-cn.json','offline/protected-terms.json','offline/licenses/manifest.json','scripts/build-maintenance-archive.ps1')){if(!$zip.GetEntry($required)){throw "缺少文件 $required"}}
  if($SourceOnly -and ($names -match '(^|/)(dist|upstream|assets)/|\.(vsix|whl|argosmodel|exe|dll|pyc|zip)$')){throw '源码包包含构建产物、缓存或运行时二进制'}
  $manifest=Read-Text $zip.GetEntry('offline/assets.json')|ConvertFrom-Json
  $assets=0

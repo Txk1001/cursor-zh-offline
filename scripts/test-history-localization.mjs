@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import { normalizeHistoryText, validateHistoryCatalog, translateHistoryStatus, historyBootstrap } from './lib/history-localization.mjs';
+import { normalizeHistoryText, validateHistoryCatalog, translateHistoryStatus, historyBootstrap, normalizeHistoryControlOptions } from './lib/history-localization.mjs';
 
 const cases = [
   ['Worked for 2m 15s','耗时 2 分 15 秒'],
@@ -31,7 +31,12 @@ const bootstrap = historyBootstrap(personal);
 assert(!bootstrap.includes('PRIVATE_CANARY'));
 assert(bootstrap.includes('localStorage.getItem(storageKey)'));
 assert(bootstrap.includes('!badge?.isConnected'));
-assert(bootstrap.includes('pre,code,a,img,input,textarea'));
+assert(bootstrap.includes('pre,code,kbd,svg,a,img,input,textarea'));
+assert.deepEqual(normalizeHistoryControlOptions(),{mode:'compact',position:'top-right'});
+assert.deepEqual(normalizeHistoryControlOptions({mode:'expanded',position:'bottom-left'}),{mode:'expanded',position:'bottom-left'});
+assert.throws(()=>normalizeHistoryControlOptions({mode:'hidden'}));
+assert.throws(()=>normalizeHistoryControlOptions({position:'center'}));
+assert(historyBootstrap(undefined,{mode:'expanded',position:'bottom-left'}).includes('"mode":"expanded","position":"bottom-left"'));
 assert(bootstrap.includes('127\\.0\\.0\\.1'));
 assert(!bootstrap.includes('https://'));
 assert(bootstrap.includes("'X-Cursor-Zh-Token'"));
