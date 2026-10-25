@@ -1,6 +1,17 @@
 import fs from 'node:fs';import path from 'node:path';import crypto from 'node:crypto';
 import assert from 'node:assert/strict';import {p,readJson} from './lib/util.mjs';
 const config=readJson(p('config.json')),pkg=readJson(p('package.json')),lock=readJson(p('package-lock.json'));
+const actionLock=readJson(p('.github/actions-lock.json'));
+assert.equal(actionLock.schema,1);
+assert.deepEqual(actionLock.actions.map(a=>a.action).sort(),['actions/checkout','actions/setup-node','actions/setup-python','actions/upload-artifact'].sort());
+for(const workflow of ['ci.yml','release.yml']) {
+ const content=fs.readFileSync(p('.github','workflows',workflow),'utf8');
+ for(const action of actionLock.actions) {
+  assert.match(action.sha,/^[a-f0-9]{40}$/);
+  assert.equal(action.runtime,'node24');
+  assert(content.includes(`${action.action}@${action.sha} # ${action.tag}`),`${workflow}: Action 与审核锁记录不一致：${action.action}`);
+ }
+}
 for(const version of [pkg.version,lock.version,lock.packages[''].version])assert.equal(version,config.version);
 assert.notEqual(config.publisher,'polang233','Integrated release must use its own identity');
 assert.equal(config.release.marketplaceEnabled,false);

@@ -25,7 +25,8 @@ class ProtectionTests(unittest.TestCase):
                       r'C:\Projects\demo\main.ts', r'\\server\share\file.txt',
                       'Ctrl+Shift+P', 'npm install', 'pnpm install --frozen-lockfile',
                       'python -m pip install numpy', 'git checkout -b feature/ui',
-                      'docker compose up -d', 'uv pip install "package==2.0"']:
+                      'docker compose up -d', 'uv pip install "package==2.0"', 'Copilot', 'Playwright',
+                      'Context7', 'MCP Registry', 'Chrome DevTools', 'PyPI', '⏎', '↵']:
             with self.subTest(token=token):
                 spans = engine.protected_spans('Run ' + token + ' before continuing.', {})
                 self.assertIn(token, [span[2] for span in spans])
@@ -57,6 +58,13 @@ class ProtectionTests(unittest.TestCase):
         spans = engine.protected_spans(source, {})
         self.assertFalse(engine.spans_preserved('$HOME 请继续', spans))
         self.assertTrue(engine.spans_preserved('$HOME $HOME 请继续', spans))
+        translator = engine.Engine.__new__(engine.Engine)
+        translator.reviewed = {}
+        translator.glossary = {}
+        translator.plain = lambda text: self.fail('Existing Chinese must not reach model')
+        for source in ['现有中文 Copilot 与 Playwright。', '请查 Registry，保留 Context7 与 PyPI。',
+                       'Please click 继续 to proceed.']:
+            self.assertEqual(translator.protected(source), source)
 
     def test_reviewed_phrase_cannot_corrupt_tokens(self):
         translator = engine.Engine.__new__(engine.Engine)

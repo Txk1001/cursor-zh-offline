@@ -2,7 +2,7 @@
 
 复用社区语言包，为 Cursor 提供简体中文界面，并用本机离线模型显示历史会话的中文译文。支持随时查看原文；不改写聊天数据库。
 
-**当前为 1.1.1 预览版。开源仓库：[Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。**安装包与 SHA-256 校验值见[预览版下载](https://github.com/Txk1001/cursor-zh-offline/releases)。当前未发布扩展市场。使用独立扩展标识 `cursor-zh-offline-local.cursor-language-pack`，不继承上游发布账号或权限。默认仅构建简体中文。
+**当前源码为 1.1.2 候选版；最近公开版本为 [1.1.1 预览版](https://github.com/Txk1001/cursor-zh-offline/releases/tag/v1.1.1)。**开源仓库：[Txk1001/cursor-zh-offline](https://github.com/Txk1001/cursor-zh-offline)。候选包不等于已发布产品，实际验证状态统一见[验收状态](docs/VALIDATION.md)。当前未发布扩展市场。使用独立扩展标识 `cursor-zh-offline-local.cursor-language-pack`，不继承上游发布账号或权限。默认仅构建简体中文。
 
 ## 适配范围
 
@@ -11,7 +11,8 @@
 | Windows x64 / Cursor 3.27.6、3.27.12 / Code OSS 1.128.0 | 当前完整补丁准入范围；此前版本有本机安装和界面记录，1.1.1 的测试结果需结合交付验收记录查看 |
 | 其他 Cursor 版本 | 安装器拒绝完整补丁，需先完成版本适配 |
 | macOS、Linux、Windows ARM64 | 完整补丁未开放；语言包源码可供移植，不构成已支持承诺 |
-| 新 Windows 用户、远端 GitHub Actions | 仍需独立验收；本机测试不代表这些环境已通过 |
+| 远端 GitHub Actions | 1.1.1 与文档门禁已有成功记录；1.1.2 须按本次提交重新检查 |
+| 独立 Windows 环境 | 尚未提供，保留为公开预览验收阻断项 |
 
 界面译文、正文自动翻译和第三方内容的覆盖范围不同。图片中的文字、未加载的会话、第三方扩展或网页不保证覆盖；模型自动译文仍可能出错，界面会标注“未校对”。技术内容与原文可随时核对。详见 [验收清单](docs/VALIDATION.md)。
 
@@ -33,13 +34,17 @@
 3. 双击 `安装离线汉化.cmd`。如只需界面中文，双击 `安装汉化.cmd`。
 4. 重新打开 Cursor。在历史页点击“启用离线翻译”，选择安装器提示的 `~/.cursor/cursor-language-pack/offline/connection.json` 完成首次本机配对。
 
-完整包不需要系统 Python、显卡或在线翻译账号。优先使用系统 Node.js；没有 Node 时尝试 Cursor 自带运行时。源码维护建议使用 Node.js 22 和 PowerShell 7。自定义安装目录或多安装时执行：
+完整包不需要系统 Python、显卡或在线翻译账号。优先使用系统 Node.js；没有 Node 时尝试 Cursor 自带运行时。维护工具最低 Node.js 22，CI 使用 Node.js 22、Python 3.12.10；归档使用 PowerShell 7。普通用户无系统 Node/Python 的真实环境仍待独立验收。自定义安装目录或多安装时执行：
 
 ```powershell
 node scripts/portable-install.mjs --dir="D:\Apps\Cursor" --with-offline
 ```
 
 目录应包含 `resources/app`。安装器在修改前检查版本、运行进程、原始资源与备份；权限不足会报错。更多用法见 [安装与回滚](README-通用安装.md)。
+
+1.1.2 候选源码的历史控件默认收成“译文”小按钮；可拖动、选择四角位置，点击外部或按 `Escape` 收起面板。安装预设支持 `--history-controls=compact|expanded` 与 `--history-position=top-right|top-left|bottom-right|bottom-left`，当前用户的布局偏好在本机保留。操作方法见 [手动配置与 Agent 自动配置](docs/AGENT-SETUP.zh-CN.md)，可复制 [Agent 配置任务模板](templates/agent-setup.zh-CN.md)。这些布局选项尚未发布到 1.1.1。
+
+需要建立验收环境时，按 [Windows 与 Mac 测试环境说明](docs/TEST-ENVIRONMENTS.zh-CN.md) 配置。Mac 当前仅评估标准语言包，完整补丁与离线正文翻译仍未开放。
 
 ## 历史会话与隐私
 
@@ -48,6 +53,7 @@ node scripts/portable-install.mjs --dir="D:\Apps\Cursor" --with-offline
 - 翻译服务仅监听 `127.0.0.1`，要求本机访问令牌。连接文件含令牌，不应共享。
 - 翻译缓存保存在当前用户状态目录的 `offline/translations.sqlite3`，包含待译原文与译文，属于个人数据。
 - 自动译文由模型生成，不能视为人工精校。可用 [示例词典](templates/history-translations.example.json) 导入人工修订，覆盖模型结果。
+- 保留 Cursor 和语言包已有的准确中文；自动翻译默认跳过含中文的正文与标题，避免重复翻译。公共产品名保护表为 `offline/protected-terms.json`，`Copilot`、`Playwright`、`Context7` 等保留原名；通用界面概念仍采用规范中文，规则见 [术语表](docs/TERMINOLOGY-zh-CN.md)。
 - 公共术语在 `offline/terms.default.json`，个人覆盖在状态目录的 `terms.user.json`。代码块、变量、路径等受保护；仍应核对原文后使用译文中的技术指令。
 
 默认状态目录为 `~/.cursor/cursor-language-pack`；便携或派生安装以安装器提示为准。连接文件、个人词典、缓存、安装备份均不进入公共源码或安装包。
@@ -69,12 +75,14 @@ node scripts/translate-install.mjs --undo --dir="D:\Apps\Cursor"
 ```powershell
 npm ci
 npm test
+npm run test:protection
+npm run lint:md
 npm run sync -- --strategy=api
 npm run verify
 npm run package -- --skip-build
 ```
 
-上游资源按 `config.json` 的 commit 固定，`metadata/community-sources.json` 是必须提交的公共来源记录。其余本机提取元数据与下载缓存不提交。
+上游资源按 `config.json` 的 commit 固定，`metadata/community-sources.json` 是必须提交的公共来源记录。其余本机提取元数据与下载缓存不提交。默认构建配置为 `public`，不会读取本机元数据；只有显式 `npm run build -- --profile=local` 才执行本机过滤和诊断，不可将该产物作为公共发行包。`npm run coverage` 统计语言资源键，不是代码执行覆盖率。
 
 ```powershell
 # 纯源码包，不要求已构建 VSIX

@@ -1,14 +1,15 @@
 # 贡献指南
 
-欢迎提交漏译、错译、版本适配与稳定性改进。当前交付为本地源码仓库；GitHub 地址建立后，使用该仓库的 Issues 与 Pull Requests。上游项目不能代收本集成版问题。
+欢迎通过 [本项目 Issues 与 Pull Requests](https://github.com/Txk1001/cursor-zh-offline) 提交漏译、错译、版本适配与稳定性改进。上游项目不能代收本集成版问题。
 
 ## 开发准备
 
-需要 Node.js 22；Windows 打包使用 PowerShell 7。从干净源码开始：
+开发基准为 Node.js 22、Python 3.12.10；Windows 打包使用 PowerShell 7。从干净源码开始：
 
 ```powershell
 npm ci
 npm test
+npm run test:protection
 npm run lint:md
 npm run sync -- --strategy=api
 npm run verify
@@ -24,6 +25,7 @@ npm run package -- --skip-build
 | 编辑器和 Cursor 标准界面 | `src/i18n/zh-cn/` |
 | 硬编码界面 | `src/i18n/zh-cn/hardcoded.json`、`local-overrides.zh-cn.json` |
 | 动态状态 | `runtime-overrides.zh-cn.json` |
+| VS Code 自动生成的设置标题 | `src/i18n/zh-cn/settings-labels.json`、`scripts/lib/settings-labels.mjs` |
 | 历史显示与离线请求 | `scripts/lib/history-localization.mjs`、`scripts/lib/offline-client.mjs` |
 | 默认术语、公共精校短句 | `offline/terms.default.json`、`offline/reviewed.zh-cn.json` |
 | 安装与回滚 | `scripts/translate-install.mjs` 及其辅助模块 |
@@ -35,6 +37,8 @@ npm run package -- --skip-build
 保留变量、占位符、命令、路径、链接、快捷键、代码与有效换行。区分 Agent“智能体”、编辑器标签页“标签页”和产品 Tab“代码补全”。遵循 [术语表](docs/TERMINOLOGY-zh-CN.md)，含糊语境标记待确认，不能凭字符串猜测技术含义。
 
 界面短句优先人工校对；历史自动翻译允许保留原文并提示未校对。不得把用户私有消息加入公共词典。提交公开、人工构造的复现文本即可。
+
+设置标题词典使用显示短语（如 `Font Size`），不替换 `editor.fontSize` 配置键。分类按 ` › ` 分段精确匹配，未知短语保留原文，不能用全局单词替换猜测含义。新增条目后运行 `node tests/settings-labels.test.mjs`，并在真实设置页核对标题、辅助功能文本、搜索和原始键值；配置渲染入口变化时应停止安装并重新适配。自定义页须逐项核对插件、MCP、技能、子智能体、规则、命令和钩子，不能只检查标签名。
 
 ## 提交前
 

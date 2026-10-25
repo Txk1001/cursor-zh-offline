@@ -12,7 +12,7 @@ if defined CURSOR_INSTALL_DIR if exist "%CURSOR_INSTALL_DIR%\Cursor.exe" set "cu
 if not defined cursor_runtime if exist "%LOCALAPPDATA%\Programs\cursor\Cursor.exe" set "cursor_runtime=%LOCALAPPDATA%\Programs\cursor\Cursor.exe"
 if not defined cursor_runtime if exist "%ProgramFiles%\Cursor\Cursor.exe" set "cursor_runtime=%ProgramFiles%\Cursor\Cursor.exe"
 if not defined cursor_runtime (
-  echo 未找到 Node.js 或默认目录中的 Cursor。请安装 Node.js 18.17 或以上，再运行此入口。
+  echo 未找到 Node.js 或默认目录中的 Cursor。请安装 Node.js 22 或以上，再运行此入口。
   exit /b 1
 )
 "%cursor_runtime%" "%~dp0scripts\translate-install.mjs" --force-language-pack %*

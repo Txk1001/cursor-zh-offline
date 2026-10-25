@@ -1,0 +1,11 @@
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {p,readJson,writeJson,parseArgs} from './lib/util.mjs';
+import {releaseCandidate} from './lib/release-candidate.mjs';
+const config=readJson(p('config.json'));
+const record=readJson(p('dist','build-record.json'));
+const commit=execFileSync('git',['rev-parse','HEAD'],{cwd:p('.'),encoding:'utf8',windowsHide:true}).trim();
+const {flags}=parseArgs();
+const directory=typeof flags.dir==='string'?path.resolve(flags.dir):p('release');
+writeJson(path.join(directory,'RELEASE-CANDIDATE.json'),releaseCandidate({version:config.version,record,commit,directory,runId:process.env.GITHUB_RUN_ID??null}));
+console.log('候选产物已绑定源码提交、构建参数与哈希；实机验收和公开发布确认仍为待完成。');

@@ -4,7 +4,9 @@
 
 ## 1. 扩大自动检查
 
-在 `.github/workflows/ci.yml` 的 `strategy.matrix.os` 中增加 macOS runner。Windows、Ubuntu、macOS 分别运行 `npm test`、`npm run check:repo`、`npm run sync -- --strategy=api`、`npm run verify` 和源码归档检查。没有 Cursor 元数据时只检查构建和结构，不能填写版本键覆盖率或实机通过。
+`.github/workflows/ci.yml` 已采用显式矩阵，包含 Windows x64、Ubuntu 24.04 x64、macOS 15 ARM64 和 macOS 15 Intel x64。现有必需 Windows/Ubuntu 检查名称保留。各环境运行 `npm test`、`npm run check:repo`、文档、固定来源同步、`npm run verify` 和标准 VSIX 打包。Windows/Ubuntu 另做 PowerShell 源码归档检查；macOS 本轮不运行该步骤，也不启动 Cursor 或离线模型。实际完成状态以对应提交的远端结果为准。
+
+每项检查保存实际系统、Node/Python 版本、CPU 架构和测试提交记录，Mac 两个架构使用独立产物名。没有 Cursor 元数据时只检查构建和结构，不能填写版本键覆盖率或实机通过。
 
 Node.js、CPU 架构也应分别列出，避免把 macOS Intel 和 Apple 芯片、Windows x64 和 ARM64 混成一项。选择有对应依赖的运行环境后再添加矩阵项。
 

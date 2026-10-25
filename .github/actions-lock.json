@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "reviewedAt": "2026-10-24",
+  "runnerMinimum": "2.327.1",
+  "actions": [
+    {
+      "action": "actions/checkout",
+      "tag": "v7.0.1",
+      "sha": "3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "runtime": "node24",
+      "releaseUrl": "https://github.com/actions/checkout/releases/tag/v7.0.1"
+    },
+    {
+      "action": "actions/setup-node",
+      "tag": "v7.1.0",
+      "sha": "949feb2413d6458794dcd2491c4babbbce0c15c1",
+      "runtime": "node24",
+      "releaseUrl": "https://github.com/actions/setup-node/releases/tag/v7.1.0"
+    },
+    {
+      "action": "actions/setup-python",
+      "tag": "v7.1.0",
+      "sha": "6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+      "runtime": "node24",
+      "releaseUrl": "https://github.com/actions/setup-python/releases/tag/v7.1.0"
+    },
+    {
+      "action": "actions/upload-artifact",
+      "tag": "v7.0.2",
+      "sha": "cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+      "runtime": "node24",
+      "releaseUrl": "https://github.com/actions/upload-artifact/releases/tag/v7.0.2"
+    }
+  ]
+}

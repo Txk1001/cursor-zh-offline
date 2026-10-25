@@ -4,7 +4,7 @@ import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 
 // PID alone is not an identity: the OS can reuse it after a crash.
-function startIdentity(pid) {
+export function startIdentity(pid) {
   if (process.platform === 'win32') {
     return execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command',
       `$ErrorActionPreference='Stop'; (Get-Process -Id ${pid}).StartTime.ToUniversalTime().Ticks`],
@@ -14,6 +14,14 @@ function startIdentity(pid) {
     const stat = fs.readFileSync(`/proc/${pid}/stat`, 'utf8');
     return fs.readFileSync('/proc/sys/kernel/random/boot_id','utf8').trim() + ':' +
       stat.slice(stat.lastIndexOf(')') + 2).split(' ')[19];
+  }
+  if (process.platform === 'darwin') {
+    const value=execFileSync('/bin/ps',['-p',String(pid),'-o','lstart='],
+      {encoding:'utf8',timeout:10000,stdio:['ignore','pipe','pipe'],env:{...process.env,LC_ALL:'C',TZ:'UTC'}}).trim().replace(/\s+/g,' ');
+    if(!/^[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{2}:\d{2}:\d{2} \d{4}$/.test(value))throw Error('无法读取 macOS 进程启动身份');
+    // BSD ps has second precision. A PID reused within that same second is
+    // conservatively treated as active, so the old lock is never reclaimed.
+    return 'darwin-lstart:'+value;
   }
   throw Error('当前系统没有受支持的进程身份检查');
 }

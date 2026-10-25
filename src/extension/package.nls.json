@@ -1,0 +1,9 @@
+{
+  "languagePack.category": "Language Pack",
+  "languagePack.selectLanguage": "Select Display Language",
+  "languagePack.openSettings": "Open Language Pack Settings",
+  "languagePack.auto": "Follow the editor's display language. The pack stays installed.",
+  "languagePack.chinese": "Simplified Chinese for the editor and Cursor interface. The pack stays installed.",
+  "languagePack.english": "Built-in English. The pack stays installed; switch back without reinstalling.",
+  "languagePack.description": "Display language for the Cursor interface. Changing this writes only the `locale` field of `argv.json` and offers to restart. The pack stays installed, so you can switch languages without reinstalling. To remove it, uninstall the extension and set the display language to English."
+}

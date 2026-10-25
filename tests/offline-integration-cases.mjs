@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 export async function checkProtectionAndTerms(translate) {
   const protectionCases=[
     ['Hello, {{name}}!',['{{name}}']],
+    ['Run ⏎',['⏎']],
+    ['Copilot and Playwright use Context7 with the MCP Registry.',['Copilot','Playwright','Context7','MCP Registry']],
     ['Replace %s with the file name.',['%s']],
     ['Open {filename} and click Continue.',['{filename}']],
     ['Save the file to /opt/project/src/main.rs.',['/opt/project/src/main.rs']],
@@ -42,7 +44,8 @@ export async function checkProtectionAndTerms(translate) {
     ['Simplified Chinese language pack',['简体中文语言包']],
     ['Install the Simplified Chinese language packs before restarting.',['简体中文语言包']],
     ['The display language controls the user interface.',['显示语言','用户界面']],
-    ['Use the context menu to open conversation history.',['右键菜单','会话历史']],
+    ['Use the context menu to open conversation history.',['右键菜单','对话历史']],
+    ['A shared conversation title appears in chat history.',['对话标题','对话历史']],
     ['The API keys are stored in environment variables.',['API 密钥','环境变量']],
   ];
   const termTranslations=await translate(terminologyCases.map(item=>item[0]));
@@ -54,5 +57,9 @@ export async function checkProtectionAndTerms(translate) {
   });
   assert.equal(protectedTranslations.length,protectionCases.length);
   assert.equal(termTranslations.length,terminologyCases.length);
-  return {protectionResults,terminologyResults,failures};
+  const existingChinese=['现有中文 Copilot 与 Playwright，查阅 MCP Registry。','官方 Registry 不托管代码，代码仍在 npm、PyPI、Docker Hub。','Please click 继续 to proceed.'];
+  const preserved=await translate(existingChinese);
+  const preservationResults=existingChinese.map((source,index)=>({source,translation:preserved[index],unchanged:preserved[index]===source}));
+  for(const result of preservationResults)if(!result.unchanged)failures.push(result);
+  return {protectionResults,terminologyResults,preservationResults,failures};
 }

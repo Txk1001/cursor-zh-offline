@@ -17,14 +17,16 @@
  *   3. src/i18n/<locale>/cursor/core.i18n.json    Cursor strings living in the core
  *   4. src/i18n/<locale>/cursor/*.i18n.json       Cursor built-in extension strings
  *
- * `metadata/cursor.json` (from `npm run extract`) is optional. When present, keys
- * that do not exist in the local Cursor build are dropped. When absent - as in CI -
- * filtering is skipped so the build still succeeds.
+ * Public builds never read `metadata/cursor.json`. Use --profile=local explicitly
+ * for installation-specific filtering and marker repair.
  *
  * Usage: npm run build [-- --locale=zh-cn] [--mode=full] [--no-filter] [--no-repair]
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {buildProfile,readBuildMetadata} from './lib/build-profile.mjs';
 import {
   p, readJson, writeJson, deepMerge, listFiles, preserveGeneratedPath, log, fail, parseArgs, loadConfig
 } from './lib/util.mjs';
@@ -45,15 +47,16 @@ const isCursorCoreFile = (file) => /^core[.\-]/.test(path.basename(file)) || pat
 
 const { flags } = parseArgs();
 const config = loadConfig();
+const profile = buildProfile(flags);
 
 const metadataFile = p('metadata', 'cursor.json');
-const metadata = fs.existsSync(metadataFile) ? readJson(metadataFile) : null;
+const metadata = readBuildMetadata(profile,metadataFile);
 
 const filterEnabled = (() => {
   if (flags.filter === false || flags['no-filter']) return false;
   if (!config.build.filterByCursorMetadata) return false;
   if (!metadata) {
-    log.warn('metadata/cursor.json not found - key filtering disabled. Run `npm run extract` on a machine with Cursor installed for a leaner pack.');
+    log.info('公共发行配置：不读取本机元数据，关闭本机过滤与修复。');
     return false;
   }
   return true;
@@ -404,13 +407,13 @@ function writeRuntime(outDir, manifest, localeList) {
     { command: 'cursorLanguagePack.stopOfflineTranslation', title: '停用离线翻译', category: '汉化维护' },
     {
       command: 'cursorLanguagePack.selectLanguage',
-      title: 'Select Display Language',
-      category: 'Language Pack'
+      title: '%languagePack.selectLanguage%',
+      category: '%languagePack.category%'
     },
     {
       command: 'cursorLanguagePack.openSettings',
-      title: 'Open Language Pack Settings',
-      category: 'Language Pack'
+      title: '%languagePack.openSettings%',
+      category: '%languagePack.category%'
     }
   ];
 
@@ -421,22 +424,21 @@ function writeRuntime(outDir, manifest, localeList) {
         type: 'string',
         enum: ['auto', ...localeList.map((l) => l.id), 'en'],
         enumDescriptions: [
-          'Follow the editor. The display language stays whatever argv.json says; this extension only offers to change it once.',
-          ...localeList.map((l) => `${l.localizedLanguageName} (${l.languageName}) — workbench and Cursor UI. Pack stays installed.`),
-          'English (built-in). Workbench and Cursor UI all return to English. The pack stays installed — switch back anytime without reinstalling.'
+          '%languagePack.auto%',
+          ...localeList.map((l) => l.id === 'zh-cn' ? '%languagePack.chinese%' : `${l.localizedLanguageName} (${l.languageName}) — workbench and Cursor UI. Pack stays installed.`),
+          '%languagePack.english%'
         ],
         default: 'auto',
         markdownDescription:
-          'Display language for the Cursor interface (editor chrome **and** Cursor-authored workbench strings).\n\n' +
-          'Changing this writes only the `locale` field of `argv.json` and offers to restart. ' +
-          'It does **not** uninstall the extension — translations stay on disk, so you can switch ' +
-          'Chinese ↔ English repeatedly without reinstalling.\n\n' +
-          'To remove the pack entirely: uninstall the extension, then set this to `en` (or delete ' +
-          '`locale` in `argv.json`) and restart.',
+          '%languagePack.description%',
         scope: 'application'
       }
     }
   };
+
+  for (const name of ['package.nls.json', 'package.nls.zh-cn.json']) {
+    fs.copyFileSync(p('src','extension',name),path.join(outDir,name));
+  }
 
   // Runtime messages of the runtime itself, keyed by their English source.
   const bundles = [];
@@ -618,12 +620,28 @@ for (const [modeId, mode] of modes) {
 writeJson(p('dist', 'build-summary.json'), {
   generatedAt: new Date().toISOString(),
   version: config.version,
+  profile,
   filterEnabled,
   repairEnabled,
   builtAgainst: metadata
     ? { cursorVersion: metadata.cursorVersion, vscodeVersion: metadata.vscodeVersion, commit: metadata.commit }
     : null,
   builds: summaries
+});
+
+let commit=null, dirty=null;
+try {
+  commit=execFileSync('git',['rev-parse','HEAD'],{cwd:p('.'),encoding:'utf8',windowsHide:true,stdio:['ignore','pipe','ignore']}).trim();
+  dirty=Boolean(execFileSync('git',['status','--porcelain','--untracked-files=no'],{cwd:p('.'),encoding:'utf8',windowsHide:true,stdio:['ignore','pipe','ignore']}).trim());
+} catch { /* Source archives have no .git; archive BUILD-INFO records origin. */ }
+writeJson(p('dist','build-record.json'),{
+  schema:1,version:config.version,profile,commit,dirty,
+  lockSha256:crypto.createHash('sha256').update(fs.readFileSync(p('package-lock.json'))).digest('hex'),
+  configSha256:crypto.createHash('sha256').update(fs.readFileSync(p('config.json'))).digest('hex'),
+  upstream:{repo:config.upstream.repo,ref:config.upstream.ref},
+  node:process.version,platform:process.platform,arch:process.arch,
+  parameters:{filterEnabled,repairEnabled,locales:locales.map(l=>l.id),modes:modes.map(([id])=>id)},
+  reproducibility:'Fixed public inputs and content manifest; byte-identical ZIP/VSIX reproducibility is not claimed.'
 });
 
 log.step('Done');

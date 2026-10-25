@@ -12,6 +12,7 @@
  *   npm run translate -- --preview
  *   npm run translate -- --undo
  *   npm run translate -- --dir="D:\cursor"
+ *   npm run translate -- --history-controls=compact --history-position=top-right
  */
 import fs from 'node:fs';
 import os from 'node:os';
@@ -23,7 +24,9 @@ import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { p, readJson, writeJson, log, fail, parseArgs, loadConfig } from './lib/util.mjs';
 import { findCursorInstalls, readCursorInfo, extensionsDir, argvJsonPath, cursorAppRoot } from './lib/cursor-paths.mjs';
-import { readHistoryCatalog, historyBootstrap, translateHistoryStatus } from './lib/history-localization.mjs';
+import { readHistoryCatalog, historyBootstrap, translateHistoryStatus, normalizeHistoryControlOptions } from './lib/history-localization.mjs';
+import {withInstallationLock} from './lib/installation-lock.mjs';
+import {injectSettingsLabels} from './lib/settings-labels.mjs';
 import { restoreTrackedFiles, finalizeInstallation, activeExtensionNames, findVersionedVsix } from './lib/install-state.mjs';
 import { offlineMainBootstrap } from './lib/offline-host.mjs';
 import { applyFileTransaction, recoverFileTransaction, writeFileAtomic } from './lib/file-transaction.mjs';
@@ -137,6 +140,7 @@ function translateUiTemplate(raw, dict, hits, rules = UI_TEMPLATE_RULES) {
 
 const { flags } = parseArgs();
 const config = loadConfig();
+const historyUiOptions=normalizeHistoryControlOptions({mode:flags['history-controls'],position:flags['history-position']});
 
 function unescapeJs(raw) {
   return raw.replace(/\\(u[0-9a-fA-F]{4}|["\\/bfnrt])/g, (_, token) => {
@@ -213,6 +217,10 @@ const MODE_PARTS = [
 
 /** Quoted literals that are shown as-is, not as a `label:` / `title:` field. */
 const BARE_LABELS = [
+  'Open Browser',
+  'New Agent',
+  'Show Chat History',
+  'Show Chat History (Editor)',
   'Send follow-up',
   'Send follow-up with subagent',
   'Open App',
@@ -791,7 +799,7 @@ function loadRuntimeOverrides(localeId, dict) {
   return Object.fromEntries(Object.entries({ ...tips, ...overrides }).filter(([key, value]) => key !== value));
 }
 
-export function injectRuntimeOverrides(source, overrides, menuOverrides = {}, historyCatalog = {version:1,entries:[]}) {
+export function injectRuntimeOverrides(source, overrides, menuOverrides = {}, historyCatalog = {version:1,entries:[]}, controlsOptions = {}) {
   const entries = Object.entries(overrides);
   if (!entries.length || source.includes('globalThis.__cursorZhCnRuntimeTextOverrides')) return source;
   const mapping = JSON.stringify(Object.fromEntries(entries))
@@ -829,10 +837,18 @@ export function injectRuntimeOverrides(source, overrides, menuOverrides = {}, hi
   const menuSelector='[role="menuitem"],[role="menuitemcheckbox"],[role="menuitemradio"],[data-component="glass-in-app-menubar"]';
   const inMenu=e=>Boolean(e?.closest(menuSelector));
   globalThis.__cursorZhCnTranslateUiText=s=>typeof s==="string"&&has(s)?m[s]:s;
-  const excluded='script,style,pre,code,textarea,input,[contenteditable]:not([contenteditable="false"]),.view-lines,.explorer-folders-view,.search-view .results,.xterm-rows,.monaco-breadcrumbs,.ui-code-block-content,[data-ui-code-block-diff],.rendered-markdown,.markdown-body,.markdown-rendered,[data-streamdown],.composer-human-message,.composer-user-message,[data-message-role],[data-role="user"],[data-role="assistant"]';
-  const controlOnly=new Set(["Default","Queue","Settings","Small","Large","Dismiss","Browse Marketplace","Open"]);
+  const excluded='script,style,pre,code,kbd,svg,textarea,input,[contenteditable]:not([contenteditable="false"]),.view-lines,.explorer-folders-view,.search-view .results,.xterm-rows,.monaco-breadcrumbs,.ui-code-block-content,[data-ui-code-block-diff],.rendered-markdown,.markdown-body,.markdown-rendered,[data-streamdown],.composer-human-message,.composer-user-message,[data-message-role],[data-role="user"],[data-role="assistant"]';
+  const controlOnly=new Set(["Default","Queue","Settings","Small","Large","Dismiss","Browse Marketplace","Open","Add","User","Workspace","Workspaces","Sources","Agent","Run","Always Run","Always run"]);
   const controls='button,[role="button"],[role="combobox"],[role="option"],[role="menuitem"],[role="switch"],[role="tab"]';
-  const blocked=n=>{const e=n.nodeType===1?n:n.parentElement;return Boolean(e?.closest(excluded+",.composer-assistant-message"))};
+  const approvalSelector='[data-tool-approval-gate] button,[data-tool-approval-gate] [role="button"]';
+  const approvalControl=e=>Boolean(e?.closest(approvalSelector));
+  const blocked=n=>{const e=n.nodeType===1?n:n.parentElement;if(e?.closest('script,style,pre,code,kbd,svg,input,textarea,[contenteditable]:not([contenteditable="false"])'))return true;return !approvalControl(e)&&Boolean(e?.closest(excluded+",.composer-assistant-message"))};
+  const approvalLabel=t=>{
+    const named=/^Always [Rr]un ('.*')(.*)$/.exec(t);
+    if(named)return "始终允许运行 "+named[1]+named[2];
+    const selected=/^Always run (selected commands|these commands) \\(([^)]*)\\)$/.exec(t);
+    return selected?"始终允许运行"+(selected[1]==="selected commands"?"所选命令":"这些命令")+"（"+selected[2]+"）":null;
+  };
   const apply=n=>{
     // Only UI placeholders are changed on form controls; their values and text
     // remain untouched, including the editable prompt and search query.
@@ -848,7 +864,7 @@ export function injectRuntimeOverrides(source, overrides, menuOverrides = {}, hi
     if(!n||blocked(n))return;
     if(n.nodeType===3){
       const v=n.nodeValue,t=v.trim();
-      const translated=has(t)&&(!controlOnly.has(t)||n.parentElement?.closest(controls))?m[t]:hasMenu(t)&&inMenu(n.parentElement)?menuM[t]:null;
+      const translated=has(t)&&(!controlOnly.has(t)||n.parentElement?.closest(controls))?m[t]:hasMenu(t)&&inMenu(n.parentElement)?menuM[t]:approvalControl(n.parentElement)?approvalLabel(t):null;
       if(translated!==null&&translated!==t){
         const i=v.indexOf(t);n.nodeValue=v.slice(0,i)+translated+v.slice(i+t.length);
       }
@@ -867,14 +883,21 @@ export function injectRuntimeOverrides(source, overrides, menuOverrides = {}, hi
     }}
     for(let c=n.firstChild;c;c=c.nextSibling)apply(c);
   };
+  // Approval buttons can be nested inside otherwise protected assistant output.
+  // Visit only these real controls, never traverse or rewrite the message body.
+  const applyApprovals=root=>{
+    if(!root)return;
+    const button=root.nodeType===1?root.closest(approvalSelector):null;if(button)apply(button);
+    if(typeof root.querySelectorAll==="function")for(const control of root.querySelectorAll(approvalSelector))apply(control);
+  };
   const pending=new Set();let scheduled=false;
-  const queue=n=>{const form=n?.nodeType===1&&(n.tagName==="INPUT"||n.tagName==="TEXTAREA");if(!n||(blocked(n)&&!form))return;
+  const queue=n=>{if(!n)return;applyApprovals(n.nodeType===1?n:n.parentElement);const form=n?.nodeType===1&&(n.tagName==="INPUT"||n.tagName==="TEXTAREA");if(blocked(n)&&!form)return;
     if(inMenu(n.nodeType===1?n:n.parentElement)){apply(n);return;}
     if(n.nodeType===1&&typeof n.querySelectorAll==="function")for(const menu of n.querySelectorAll(menuSelector))apply(menu);
     pending.add(n);if(scheduled)return;scheduled=true;
     requestAnimationFrame(()=>{scheduled=false;const nodes=Array.from(pending);pending.clear();for(const node of nodes)apply(node)});
   };
-  apply(document);
+  applyApprovals(document);apply(document);
   const observer=new MutationObserver(records=>{for(const record of records){
     if(record.type==="characterData"||record.type==="attributes")queue(record.target);
     else for(const node of record.addedNodes)queue(node);
@@ -883,7 +906,7 @@ export function injectRuntimeOverrides(source, overrides, menuOverrides = {}, hi
   globalThis.__cursorZhCnRuntimeTextObserver=observer;
 }catch{}})();
 `;
-  return bootstrap + historyBootstrap(historyCatalog) + withTipTranslation;
+  return bootstrap + historyBootstrap(historyCatalog,controlsOptions) + withTipTranslation;
 }
 
 function bundlePath(appRoot, rel) {
@@ -1248,6 +1271,10 @@ if(flags['with-offline']&&!flags.preview&&!flags.undo){
 }
 
 if (flags.undo) {
+  withInstallationLock(journalPath, () => {
+  if (fs.existsSync(journalPath)) fail('检测到新的未完成事务，已保留现场；请重新运行以先完成恢复。');
+  const record = readJson(recPath, null);
+  const sameInstall = record && record.installRoot === install.installRoot && record.commit === info.commit;
   if (!sameInstall) {
     fail(`这个安装没有与当前 commit 匹配的备份，不能跨版本还原。\n  ${install.installRoot}`);
   }
@@ -1262,14 +1289,17 @@ if (flags.undo) {
   if (!result.complete) fail(`回滚未完成：已恢复 ${result.restored} 项，仍有 ${Object.keys(left).length} 项未恢复。记录及原始备份已保留：${recPath}`);
   log.ok(`已还原 ${result.restored} 个文件，${result.alreadyOriginal} 项原本已恢复。原始备份保留供核对。语言包和显示语言没有动。`);
   if (checksums) log.plain('安装校验已按当前文件重新算过。');
+  });
   process.exit(0);
 }
 
 const locale = localeChoice();
 const dict = loadDict(locale.id);
 const runtimeOverrides = loadRuntimeOverrides(locale.id, dict);
-const historyCatalogFile = typeof flags['history-translations'] === 'string' ? path.resolve(flags['history-translations']) : path.join(stateDir(info.dataFolderName), `history-translations.${locale.id}.json`);
-const historyCatalog = readHistoryCatalog(historyCatalogFile);
+const settingsLabelsFile = p('src', 'i18n', locale.id, 'settings-labels.json');
+const settingsLabels = fs.existsSync(settingsLabelsFile) ? readJson(settingsLabelsFile) : {};
+const historyCatalogFile = typeof flags['history-translations'] === 'string' ? path.resolve(flags['history-translations']) : null;
+const historyCatalog = historyCatalogFile ? readHistoryCatalog(historyCatalogFile) : {version:1,entries:[]};
 const menuOverrides = Object.fromEntries(MENU_LABELS.filter((key) => typeof dict[key] === 'string').map((key) => [key, dict[key]]));
 const preview = flags.preview === true;
 const plan = [];
@@ -1303,8 +1333,10 @@ for (const rel of bundlePaths(install.appRoot)) {
     ? {text:source.toString('utf8'),count:0,hits:new Map()}
     : rewrite(source.toString('utf8'), dict);
   for (const key of hits.keys()) seen.add(key);
+  const settingsText = /^out\/vs\/workbench\/workbench\.(?:desktop|glass)\.main\.js$/.test(rel)
+    ? injectSettingsLabels(staticText, settingsLabels) : staticText;
   const text = /^(?:out\/vs\/workbench\/workbench\.(?:desktop|glass)\.main\.js|molten\/dist\/renderer\/assets\/boot-[\w-]+\.js)$/.test(rel)
-    ? injectRuntimeOverrides(staticText, runtimeOverrides, menuOverrides, historyCatalog)
+    ? injectRuntimeOverrides(settingsText, runtimeOverrides, menuOverrides, historyCatalog,historyUiOptions)
     : rel === 'out/main.js' ? staticText + offlineMainBootstrap(info.dataFolderName) : staticText;
   if (text === before.toString('utf8')) continue;
   total += count;

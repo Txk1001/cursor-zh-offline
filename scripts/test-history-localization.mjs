@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import { normalizeHistoryText, validateHistoryCatalog, translateHistoryStatus, historyBootstrap } from './lib/history-localization.mjs';
+import { normalizeHistoryText, validateHistoryCatalog, translateHistoryStatus, historyBootstrap, normalizeHistoryControlOptions } from './lib/history-localization.mjs';
 
 const cases = [
   ['Worked for 2m 15s','耗时 2 分 15 秒'],
@@ -10,6 +10,10 @@ const cases = [
   ['worked for 1h','耗时 1 小时'],
   ['Thought 4s','思考用时 4 秒'],
   ['13h ago','13 小时前'],
+  ['1S ago','1 秒前'],
+  ['2 HOURS ago','2 小时前'],
+  ['Today','今天'],
+  ['Yesterday','昨天'],
   ['2 months ago','2 个月前'],
   ['1 search','1 次搜索'],
   ['Explored 3 searches','已查看 3 次搜索'],
@@ -27,7 +31,12 @@ const bootstrap = historyBootstrap(personal);
 assert(!bootstrap.includes('PRIVATE_CANARY'));
 assert(bootstrap.includes('localStorage.getItem(storageKey)'));
 assert(bootstrap.includes('!badge?.isConnected'));
-assert(bootstrap.includes('pre,code,a,img,input,textarea'));
+assert(bootstrap.includes('pre,code,kbd,svg,a,img,input,textarea'));
+assert.deepEqual(normalizeHistoryControlOptions(),{mode:'compact',position:'top-right'});
+assert.deepEqual(normalizeHistoryControlOptions({mode:'expanded',position:'bottom-left'}),{mode:'expanded',position:'bottom-left'});
+assert.throws(()=>normalizeHistoryControlOptions({mode:'hidden'}));
+assert.throws(()=>normalizeHistoryControlOptions({position:'center'}));
+assert(historyBootstrap(undefined,{mode:'expanded',position:'bottom-left'}).includes('"mode":"expanded","position":"bottom-left"'));
 assert(bootstrap.includes('127\\.0\\.0\\.1'));
 assert(!bootstrap.includes('https://'));
 assert(bootstrap.includes("'X-Cursor-Zh-Token'"));

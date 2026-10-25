@@ -5,7 +5,7 @@ import {checkProtectionAndTerms} from '../tests/offline-integration-cases.mjs';
 const {flags}=parseArgs();
 assert.equal(typeof flags.state,'string','Pass --state with an isolated test installation; the user service must not be used.');
 const state=path.resolve(flags.state);
-for(const file of ['engine.py','terms.default.json','reviewed.zh-cn.json']) assert(fs.readFileSync(path.join(state,file)).equals(fs.readFileSync(p('offline',file))),`Stale ${file}: run setup-offline.mjs --state first.`);
+for(const file of ['engine.py','terms.default.json','protected-terms.json','reviewed.zh-cn.json']) assert(fs.readFileSync(path.join(state,file)).equals(fs.readFileSync(p('offline',file))),`Stale ${file}: run setup-offline.mjs --state first.`);
 const service=createRequire(import.meta.url)(p('src','extension','offline.cjs'));
 assert((await service.start(state))?.ready);
 try {
@@ -33,7 +33,8 @@ const edgeResults=await checkProtectionAndTerms(async texts=>{
   for(let i=0;i<texts.length;i+=8){const batch=texts.slice(i,i+8);const response=await fetch(connection.url+'/translate',{method:'POST',headers,body:JSON.stringify({texts:batch})});assert.equal(response.status,200);const value=await response.json();assert.equal(value.translations.length,batch.length);result.push(...value.translations)}
   return result;
 });
-const report={engine:'argos-en-zh-1.9-bridge-3',translationSamples:translations,cache:'pass',unauthorizedRejected:true,foreignOriginRejected:true,outboundBlocked:true,...edgeResults};
+const engineHealth=await service.health(state);
+const report={engine:engineHealth?.engine,engineVersion:engineHealth?.version,translationSamples:translations,cache:'pass',unauthorizedRejected:true,foreignOriginRejected:true,outboundBlocked:true,...edgeResults};
 if(typeof flags.report==='string'){const destination=path.resolve(flags.report);fs.mkdirSync(path.dirname(destination),{recursive:true});fs.writeFileSync(destination,JSON.stringify(report,null,2)+'\n')}
 console.log(JSON.stringify(report,null,2));
 assert.equal(edgeResults.failures.length,0,'Offline protection or terminology regressions; see results.');
