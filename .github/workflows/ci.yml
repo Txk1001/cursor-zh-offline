@@ -4,21 +4,46 @@ permissions:
   contents: read
 jobs:
   checks:
+    name: checks (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-    # Keep existing required check names; pin Linux while CPython 3.12.10 has no Ubuntu 26 build.
-    runs-on: ${{ matrix.os == 'ubuntu-latest' && 'ubuntu-24.04' || 'windows-latest' }}
+        include:
+          - os: ubuntu-latest
+            runner: ubuntu-24.04
+            platform: linux
+            arch: x64
+            artifact: cursor-zh-Linux
+          - os: windows-latest
+            runner: windows-latest
+            platform: win32
+            arch: x64
+            artifact: cursor-zh-Windows
+          - os: macos-15
+            runner: macos-15
+            platform: darwin
+            arch: arm64
+            artifact: cursor-zh-macOS-arm64
+          - os: macos-15-intel
+            runner: macos-15-intel
+            platform: darwin
+            arch: x64
+            artifact: cursor-zh-macOS-x64
+    # Preserve required Windows/Linux check names; macOS architectures stay separate.
+    runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
+          architecture: ${{ matrix.arch }}
           cache: npm
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version-file: '.python-version'
+          architecture: ${{ matrix.arch }}
+      - name: Record actual test environment
+        run: node scripts/record-test-environment.mjs --platform=${{ matrix.platform }} --arch=${{ matrix.arch }} --node-major=22
       - run: npm ci
       - name: Test deterministic technical protection (8 rules)
         run: npm run test:protection
@@ -32,6 +57,7 @@ jobs:
       - run: npm run verify
       - run: npm run package -- --skip-build
       - name: Build and validate source archive
+        if: runner.os != 'macOS'
         shell: pwsh
         run: ./scripts/build-public-archive.ps1 -SourceOnly -OutputPath "${{ runner.temp }}/cursor-zh-source.zip"
       - name: Prepare isolated offline runtime
@@ -45,9 +71,11 @@ jobs:
         shell: pwsh
         run: ./scripts/build-public-archive.ps1 -WithOffline -OutputPath "${{ runner.temp }}/cursor-zh-offline.zip"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
         with:
-          name: cursor-zh-${{ runner.os }}
+          name: ${{ matrix.artifact }}
           path: |
+            reports/ci-test-environment.json
             dist/*.vsix
             ${{ runner.temp }}/cursor-zh-*.zip
             ${{ runner.temp }}/cursor-zh-*.zip.sha256

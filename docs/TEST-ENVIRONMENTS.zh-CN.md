@@ -67,6 +67,10 @@ Microsoft 说明 Sandbox 不继承主机中安装的软件，每次启动提供�
 
 ### 3.3 后续完整移植需要另外完成的工作
 
+没有自有 Mac 时，先使用 GitHub 的 `macos-15`（ARM64）和 `macos-15-intel`（x64）做独立自动检查。本仓库 CI 已配置这两项，实际结果以对应提交的检查为准；每项产物保存系统、Node/Python 版本与实际架构。它们检查维护代码和标准 VSIX 构建，不会下载或启动 Cursor，也不运行 Windows 离线包；Mac 的 PowerShell 源码 ZIP 归档步骤本轮不执行。[GitHub 官方运行环境](https://docs.github.com/en/actions/reference/runners/github-hosted-runners)
+
+真实界面验收可以使用获授权的远程 Mac，或由 Mac 用户按统一清单提交脱敏结果，不要求维护者购买电脑。仍需覆盖菜单、设置、输入、历史、控件位置、重启和恢复；没有实际完成的项目继续待验收。macOS 自动环境成功不会补齐独立 Windows 的验收缺口。
+
 开发测试基准沿用 Node.js 22、Python 3.12.10，并选择对应 Mac 架构的原生运行环境。它们用于开发与移植，不应预先安装到“无开发工具普通用户”验收环境来掩盖依赖问题。
 
 后续需要为每个架构单独准备和校验 Python、Argos、CTranslate2 等依赖，补齐资产清单、启动入口、权限、原文保护、离线调用、重复安装与回滚。必须检查修改应用后的签名、完整性和启动行为；禁止关闭 Gatekeeper 或删除平台拒绝来制造通过结果。执行顺序见 [跨平台方法](CROSS-PLATFORM.md)。
