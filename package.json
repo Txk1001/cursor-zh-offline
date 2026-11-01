@@ -35,7 +35,7 @@
     "jsdom": "26.1.0",
     "markdownlint-cli2": "0.24.0",
     "opencc-js": "1.4.1",
-    "ovsx": "0.10.1"
+    "ovsx": "1.3.0"
   },
   "$devDependencies": "opencc-js is only used by scripts/convert-zh-tw.mjs, which regenerates the zh-tw sources from zh-cn. It is declared so `npm ci` keeps it available.",
   "repository": {
